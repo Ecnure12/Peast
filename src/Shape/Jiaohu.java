@@ -89,7 +89,7 @@ public class Jiaohu implements Serializable, Comparable<Jiaohu> {
 		Font font1 = new Font("SansSerif", 0, 9);
 		Font tmp = g.getFont();
 		g.setFont(font1);
-		g.drawString("" + num, x + 18, y + 1);
+		g.drawString("" + num, x + 23, y + 1);
 		g.setFont(tmp);
 	}
 
@@ -113,7 +113,7 @@ public class Jiaohu implements Serializable, Comparable<Jiaohu> {
 
 	private void setSize(int middlex, int middley) {
 		this.length = (("int" + this.number).length() * 7 + 25);
-		this.x2 = 40;
+		this.x2 = 60;
 		this.y2 = 30;
 		this.x1 = (middlex - this.x2 / 2);
 		this.y1 = (middley - this.y2 / 2);

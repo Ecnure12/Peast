@@ -1,6 +1,6 @@
 package UI;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 
 public class FatherPane extends JPanel
 {

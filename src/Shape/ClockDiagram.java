@@ -18,18 +18,18 @@ public class ClockDiagram extends Diagram {
 	public ClockDiagram(Diagram t) {
 		super("ClockDiagram");
 
-		this.title = "ClockDiagram";
-
 		this.components = new LinkedList();
 
-		if (t.getTitle().equals("ContextDiagram")) {
-
+		if (t.getTitle().equals("ProblemDiagram")) {
 			for (int i = 0; i <= t.components.size() - 1; i++) {
 				Shape tmp_s = (Shape) t.components.get(i);
 				this.components.add(tmp_s);
+				if(t.components.get(i) instanceof Rect && ((Rect)t.components.get(i)).getState() != 2){
+					this.clocks.add(new Clock());
+				}
 			}
 		}
-		
+
 		//this.clocks.add(new Clock());
 	}
 
@@ -45,12 +45,23 @@ public class ClockDiagram extends Diagram {
 				}
 
 				String biao = tmpLine.name;
-				g.drawString(biao, (tmpLine.x1 + tmpLine.x2) / 2,
+				g.drawString(biao + "(CS)", (tmpLine.x1 + tmpLine.x2) / 2,
 						(tmpLine.y1 + tmpLine.y2) / 2);
 
 				g.setColor(Color.black);
 				tmp.draw(g);
 			}
+
+			if(tmp.shape == 1){
+				Oval tmpOval = (Oval) tmp;
+
+				if(tmpOval.selected){
+					g.setColor(Color.red);
+				}
+
+				tmp.draw(g);
+			}
+
 			if (tmp.shape == 0) {
 				Rect tmpRect = (Rect) tmp;
 
@@ -71,27 +82,15 @@ public class ClockDiagram extends Diagram {
 		}
 	}
 
-	// »­Ê±ÖÓ±íÅÌ
-	// middleX:±íÅÌÖÐÐÄÎ»ÖÃµÄx×ø±ê
-	// middleY:±íÅÌÖÐÐÄÎ»ÖÃµÄy×ø±ê
+	// ï¿½ï¿½Ê±ï¿½Ó±ï¿½ï¿½ï¿½
+	// middleX:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½Ãµï¿½xï¿½ï¿½ï¿½ï¿½
+	// middleY:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½Ãµï¿½yï¿½ï¿½ï¿½ï¿½
 	public void drawClock(Graphics g, int middleX, int middleY) {
-		int radius = 10;// ±íÅÌµÄ°ë¾¶
-		Color temp = g.getColor();// ±£´æµ±Ç°»­±ÊµÄÑÕÉ«
-
-		g.setColor(Color.white);
-		g.fillOval(middleX - radius, middleY - radius, 20, 20);// Ê±ÖÓÅÌ
-
+		Color temp = g.getColor();// ï¿½ï¿½ï¿½æµ±Ç°ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½É«
 		g.setColor(temp);
-		g.drawOval(middleX - radius, middleY - radius, 20, 20);// Ê±ÖÓÅÌ
-		g.drawLine(middleX, middleY - radius, middleX, middleY - radius + 2);// 12µã¿Ì¶È
-		g.drawLine(middleX + radius, middleY, middleX + radius - 2, middleY);// 3µã¿Ì¶È
-		g.drawLine(middleX, middleY + radius, middleX, middleY + radius - 2);// 6µã¿Ì¶È
-		g.drawLine(middleX - radius, middleY, middleX - radius + 2, middleY);// 9µã¿Ì¶È
-		g.drawLine(middleX, middleY, middleX - 5, middleY - 5);// ·ÖÕë
-		g.drawLine(middleX, middleY, middleX + 3, middleY - 3);// Ê±Õë
-
+		g.drawRect(middleX - 24, middleY, 24, 12);
+		g.drawString("" + "CS", middleX - 20, middleY + 12);
 		g.setColor(Color.black);
-		
 	}
 
 	public void addClock(Clock clock){

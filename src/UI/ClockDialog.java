@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.LinkedList;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -43,6 +44,16 @@ public class ClockDialog extends JDialog implements ActionListener {
 	Clock myClock;
 
 	public void actionPerformed(ActionEvent e) {
+		LinkedList<Rect> tempRects = new LinkedList<Rect>();
+		for(int i = 0;i < Main.win.myProblemDiagram.components.size();i++){
+			if(Main.win.myProblemDiagram.components.get(i) instanceof Rect && Main.win.myProblemDiagram.getMachine() != Main.win.myProblemDiagram.components.get(i)){
+				tempRects.add((Rect)Main.win.myProblemDiagram.components.get(i));
+			}
+		}
+		LinkedList<Clock> tempClocks = new LinkedList<Clock>();
+		for(int i = 0;i < Main.win.cd.getClocks().size();i++){
+			tempClocks.add(Main.win.cd.getClocks().get(i));
+		}
 		if (e.getActionCommand().equals("confirm")) {
 			dispose();
 			if (selectedIndex !=0) {
@@ -53,26 +64,28 @@ public class ClockDialog extends JDialog implements ActionListener {
 				myClock.setOffset(offsetText.getText());
 				myClock.setResolution(resolutionText.getText());
 			}
-			
 			Main.win.cd.setClock(editor, myClock);
-
 			InstantGraph tempIg = new InstantGraph(editor, myClock);
-
 			if (Main.win.instantPane == null) {
 				//InstantPane ip = new InstantPane(tempIg);
 				InstantPane ip = new InstantPane(editor, myClock);
 				Main.win.instantPane = ip;
 				Main.win.myDisplayPane.addPane(Main.win.instantPane,
 						"InstantGraph");
-				return;
-			} else {
-				//Main.win.instantPane.addGraph(tempIg);
+				for(int i = 0;i < tempClocks.size();i++){
+					if(Main.win.cd.getClocks().get(i) != myClock){
+						Clock tempClock = tempClocks.get(i);
+						Rect tempRect = tempRects.get(i);
+						InstantGraph temp = new InstantGraph(tempRect,tempClock);
+						Main.win.instantPane.addGraph(temp);
+					}
+				}
+			}
+			else {
 				Main.win.instantPane.addGraph(editor, myClock);
 			}
-
 			FatherPane kk = Main.win.myDisplayPane.getMyPane("InstantGraph");
 			Main.win.myDisplayPane.setSelected(kk);
-
 		} else {
 			dispose();
 		}

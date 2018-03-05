@@ -21,11 +21,7 @@ import Shape.Phenomenon;
 import Shape.Rect;
 
 public class ConstraintDialog extends JDialog implements ActionListener {
-	
-	
-	
-	JLabel label0=new JLabel("I");
-	JLabel label1=new JLabel("I");
+
 
 	String[] character = { "£¼", "¡Ü" , "£½" , "£­"};
 	JComboBox constraint=new JComboBox(character);
@@ -56,7 +52,7 @@ public class ConstraintDialog extends JDialog implements ActionListener {
 	private void jbInit() {
 		// TODO Auto-generated method stub
 		setTitle("ConstraintEditor");
-		setSize(new Dimension(300, 150));
+		setSize(new Dimension(300, 180));
 		this.setResizable(false);
 		ImageIcon img = new ImageIcon(Main.class.getResource("/images/ee.jpg"));
 		background = new JLabel(img);
@@ -108,22 +104,15 @@ public class ConstraintDialog extends JDialog implements ActionListener {
 				}
 			}
 		}
-		
-		Font temp=new Font("ËÎÌå", 1, 30);
-		label0.setFont(temp);
-		label0.setBounds(5, 0, 50, 50);
-		JiaohuFrom.setBounds(20, 20, 60, 20);
-		constraint.setBounds(90, 20, 50, 20);
-		label1.setFont(temp);
-		label1.setBounds(140, 0, 50, 50);
-		JiaohuTo.setBounds(155, 20, 60, 20);
-		number.setBounds(225,20,60,20);
+
+		JiaohuFrom.setBounds(10, 20, 100, 20);
+		constraint.setBounds(120, 20, 60, 20);
+		JiaohuTo.setBounds(190, 20, 100, 20);
+		number.setBounds(300,20,60,20);
 		
 		confirm.setBounds(90, 80, 80, 25);
 		confirm.addActionListener(this);
 
-		contentPane.add(label0);
-		contentPane.add(label1);
 		contentPane.add(JiaohuFrom);
 		contentPane.add(constraint);
 		contentPane.add(JiaohuTo);

@@ -1,10 +1,6 @@
 package UI;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Graphics;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -17,23 +13,11 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.LinkedList;
 
-import javax.swing.JFrame;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
 
 import foundation.Checker;
 
-import Shape.Changjing;
-import Shape.Diagram;
-import Shape.InstantRelation;
-import Shape.Jiaohu;
-import Shape.Line;
-import Shape.Persist;
-import Shape.Rect;
-import Shape.Shape;
+import Shape.*;
 
 public class InstantPane extends FatherPane implements MouseMotionListener,
 		MouseListener, ActionListener {
@@ -62,13 +46,17 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 	private int count = 1;// Í¼µÄÊýÄ¿
 
 	JPopupMenu popupMenu = new JPopupMenu();
-	JMenuItem add = new JMenuItem("Add Instant Constraint...");
-	JMenuItem coi = new JMenuItem("Coincidence");
-	JMenuItem pre = new JMenuItem("Precedence");
-	JMenuItem str_pre = new JMenuItem("Strict Precedence");
-	JMenuItem add_clock_cons = new JMenuItem("Add Clock Constraint...");
-	JMenuItem combine = new JMenuItem("Clock Construction...");
-	JMenuItem check = new JMenuItem("Check with NuSMV");
+
+	Font font = new Font("Arial", Font.PLAIN, 15);
+	JPanel buttonPanel = new JPanel();
+	JButton addBut = new JButton("Add Instant Constraint...");
+	JButton coiBut = new JButton("Coincidence");
+    JButton preBut = new JButton("Precedence");
+    JButton str_preBut = new JButton("Strict Precedence");
+    JButton add_clock_consBut = new JButton("Add Clock Constraint...");
+    JButton combineBut = new JButton("Clock Construction...");
+    JButton checkBut = new JButton("Check with NuSMV");
+
 
 	ConstraintPane south = new ConstraintPane();
 
@@ -78,23 +66,33 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 		this.type = 1;
 		this.setBackground(Color.white);
 		igs.add(ig);
-		this.setLayout(new BorderLayout());
+		this.setLayout(new BorderLayout(5,5));
 		this.add(south, BorderLayout.SOUTH);
 
-		this.popupMenu.add(this.add);
-		this.popupMenu.add(this.add_clock_cons);
-		this.popupMenu.add(this.coi);
-		this.popupMenu.add(this.pre);
-		this.popupMenu.add(this.str_pre);
-		this.popupMenu.add(this.combine);
-		this.popupMenu.add(this.check);
-		this.add.addActionListener(this);
-		this.coi.addActionListener(this);
-		this.pre.addActionListener(this);
-		this.str_pre.addActionListener(this);
-		this.add_clock_cons.addActionListener(this);
-		this.combine.addActionListener(this);
-		this.check.addActionListener(this);
+		buttonPanel.setLayout(new GridLayout(7, 1));
+		buttonPanel.setPreferredSize(new Dimension(200,30));
+		addBut.setFont(font);
+		coiBut.setFont(font);
+		preBut.setFont(font);
+		str_preBut.setFont(font);
+		add_clock_consBut.setFont(font);
+		combineBut.setFont(font);
+		checkBut.setFont(font);
+		buttonPanel.add(addBut);
+		buttonPanel.add(coiBut);
+		buttonPanel.add(preBut);
+		buttonPanel.add(str_preBut);
+		buttonPanel.add(add_clock_consBut);
+		buttonPanel.add(combineBut);
+		buttonPanel.add(checkBut);
+		this.add("East", buttonPanel);
+		addBut.addActionListener(this);
+		coiBut.addActionListener(this);
+		preBut.addActionListener(this);
+		str_preBut.addActionListener(this);
+		add_clock_consBut.addActionListener(this);
+		combineBut.addActionListener(this);
+		checkBut.addActionListener(this);
 		addMouseListener(this);
 		addMouseMotionListener(this);
 	}
@@ -107,20 +105,30 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 		this.setLayout(new BorderLayout());
 		this.add(south, BorderLayout.SOUTH);
 
-		this.popupMenu.add(this.add);
-		this.popupMenu.add(this.add_clock_cons);
-		this.popupMenu.add(this.coi);
-		this.popupMenu.add(this.pre);
-		this.popupMenu.add(this.str_pre);
-		this.popupMenu.add(this.combine);
-		this.popupMenu.add(this.check);
-		this.add.addActionListener(this);
-		this.coi.addActionListener(this);
-		this.pre.addActionListener(this);
-		this.str_pre.addActionListener(this);
-		this.add_clock_cons.addActionListener(this);
-		this.combine.addActionListener(this);
-		this.check.addActionListener(this);
+		buttonPanel.setLayout(new GridLayout(7, 1));
+		buttonPanel.setPreferredSize(new Dimension(200,30));
+		addBut.setFont(font);
+		coiBut.setFont(font);
+		preBut.setFont(font);
+		str_preBut.setFont(font);
+		add_clock_consBut.setFont(font);
+		combineBut.setFont(font);
+		checkBut.setFont(font);
+		buttonPanel.add(addBut);
+		buttonPanel.add(coiBut);
+		buttonPanel.add(preBut);
+		buttonPanel.add(str_preBut);
+		buttonPanel.add(add_clock_consBut);
+		buttonPanel.add(combineBut);
+		buttonPanel.add(checkBut);
+		this.add("East", buttonPanel);
+		addBut.addActionListener(this);
+		coiBut.addActionListener(this);
+		preBut.addActionListener(this);
+		str_preBut.addActionListener(this);
+		add_clock_consBut.addActionListener(this);
+		combineBut.addActionListener(this);
+		checkBut.addActionListener(this);
 		addMouseListener(this);
 		addMouseMotionListener(this);
 	}
@@ -280,6 +288,7 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 
 	public void paint(Graphics g) {
 		super.paint(g);
+		Arrow arrow = new Arrow();
 		if (this.igs != null) {
 			// igs.get(0).draw(g);
 			for (int i = 0; i < count; i++) {
@@ -296,6 +305,45 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 		if (this.cRelations != null) {
 			for (int i = 0; i < cRelations.size(); i++) {
 				cRelations.get(i).draw(g);
+			}
+		}
+		// order from different InstantGraphs
+		for(int i = 0 ;i < this.igs.size();i++){
+			for(int j = i + 1;j < this.igs.size();j++){
+				InstantGraph tempIg1 = igs.get(i);
+				InstantGraph tempIg2 = igs.get(j);
+				for(int m = 0;m < tempIg1.getJiaohu().size();m++){
+					for(int n = 0;n < tempIg2.getJiaohu().size();n++){
+						Jiaohu tempJh1 = tempIg1.getJiaohu().get(m);
+						Jiaohu tempJh2 = tempIg2.getJiaohu().get(n);
+						for(int index = 0;index < Main.win.myIntDiagram.size(); index++){
+							IntDiagram tempId = Main.win.myIntDiagram.get(index);
+							for(int x = 0;x < tempId.getChangjing().size();x++){
+								Changjing changjing = (Changjing) tempId.getChangjing().get(x);
+								if(changjing.getState() != 2){
+									Jiaohu from = changjing.getFrom();
+									Jiaohu to = changjing.getTo();
+									if(from.getNumber()==tempJh1.getNumber() && to.getNumber() == tempJh2.getNumber()){
+                                        if(tempJh1.getMiddleX() <= tempJh2.getMiddleX()){
+                                            arrow.paintComponent(tempJh1.getMiddleX() - 5,tempJh1.getMiddleY()-8,tempJh2.getMiddleX() - 35,tempJh2.getMiddleY()-8,g);
+                                        }
+										else{
+                                            arrow.paintComponent(tempJh1.getMiddleX() - 35,tempJh1.getMiddleY()-8,tempJh2.getMiddleX() - 5,tempJh2.getMiddleY()-8,g);
+                                        }
+									}
+									else if (from.getNumber() == tempJh2.getNumber() && to.getNumber() == tempJh1.getNumber()){
+										if(tempJh1.getMiddleX() <= tempJh2.getMiddleX()){
+                                            arrow.paintComponent(tempJh2.getMiddleX() - 35,tempJh2.getMiddleY()-8,tempJh1.getMiddleX() - 5,tempJh1.getMiddleY()-8,g);
+                                        }
+                                        else{
+                                            arrow.paintComponent(tempJh2.getMiddleX() - 5,tempJh2.getMiddleY()-8,tempJh1.getMiddleX() - 35,tempJh1.getMiddleY()-8,g);
+                                        }
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 	}
@@ -640,8 +688,6 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 	}
 
 	public void addConstraint(String from, String cons, String to, String num) {
-		// int fromNum = Integer.valueOf(from.substring(3));
-		// int toNum = Integer.valueOf(to.substring(3));
 		if (checkConstraint(from, cons, to))
 			this.south.addConstraint(from + cons + to + num);
 		else

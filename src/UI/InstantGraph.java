@@ -243,32 +243,17 @@ public class InstantGraph implements Serializable {
 	}
 
 	public void draw(Graphics g) {
-
 		// 画图的标识
 		g.drawString("C", originX - 5, originY - 10);
-
 		Font font1 = new Font("SansSerif", 0, 9);
 		Font tmp = g.getFont();
 		g.setFont(font1);
-
-		g.drawString(this.getName(), originX + 1, originY - 8);
-
+		g.drawString(this.getName(), originX + 3, originY - 8);
 		g.setFont(tmp);
-
-		// g.drawString("CLK:" + this.clock.getName(), originX - 10, originY -
-		// 40);
-		// 画坐标线段
 		g.drawLine(originX + 20, originY - 10, originX + length, originY - 10);
-		// 画箭头
-		// g.drawLine(originX + length, originY, originX + length - 5, originY -
-		// 5);
-		// g.drawLine(originX + length, originY, originX + length - 5, originY +
-		// 5);
-		// 实心箭头
 		g.fillPolygon(new int[] { originX + length, originX + length - 10,
 				originX + length - 10 }, new int[] { originY - 10,
 				originY - 15, originY - 5 }, 3);
-
 		// 画交互
 		for (int i = 0; i < jiaohu.size(); i++) {
 			Jiaohu jh = (Jiaohu) this.jiaohu.get(i);
@@ -276,8 +261,6 @@ public class InstantGraph implements Serializable {
 		}
 		// 画单位
 		g.drawString(clock.getUnit(), originX + length, originY + 5);
-
-		// getOrder();
 	}
 
 	public Jiaohu whichSelected(int x, int y) {

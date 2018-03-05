@@ -342,6 +342,9 @@ public class Main extends JFrame implements ActionListener {
 			this.myDisplayPane.addPane(new MyPane(t), t.getTitle());
 			this.myInfoPane.treeAdd(1, 0, "");
 			this.myDrawPane.setState(4);
+			if(t != null){
+				cd = new ClockDiagram(t);
+			}
 
 			/*************************************************************************/
 			myIntDiagram.clear();
