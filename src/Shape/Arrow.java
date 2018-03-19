@@ -27,6 +27,13 @@ public class Arrow extends JPanel implements Serializable {
         drawAL(x1, y1, x2, y2, g2);// 这里x1, y1, x2, y2必须要声明并且初始化，而具体声明的位置和初始化的值
     }
 
+    public void paintComponent(int x1, int y1, int x2, int y2, String str, Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setPaint(Color.black);
+        drawAL(x1, y1, x2, y2, str, g2);// 这里x1, y1, x2, y2必须要声明并且初始化，而具体声明的位置和初始化的值
+    }
+
     public static void drawAL(int sx, int sy, int ex, int ey, Graphics2D g2)
     {
 
@@ -67,6 +74,48 @@ public class Arrow extends JPanel implements Serializable {
         //非实心箭头
         //g2.draw(triangle);
 
+    }
+
+    public static void drawAL(int sx, int sy, int ex, int ey, String str, Graphics2D g2)
+    {
+
+        double H = 10; // 箭头高度
+        double L = 4; // 底边的一半
+        int x3 = 0;
+        int y3 = 0;
+        int x4 = 0;
+        int y4 = 0;
+        double awrad = Math.atan(L / H); // 箭头角度
+        double arraow_len = Math.sqrt(L * L + H * H); // 箭头的长度
+        double[] arrXY_1 = rotateVec(ex - sx, ey - sy, awrad, true, arraow_len);
+        double[] arrXY_2 = rotateVec(ex - sx, ey - sy, -awrad, true, arraow_len);
+        double x_3 = ex - arrXY_1[0]; // (x3,y3)是第一端点
+        double y_3 = ey - arrXY_1[1];
+        double x_4 = ex - arrXY_2[0]; // (x4,y4)是第二端点
+        double y_4 = ey - arrXY_2[1];
+
+        Double X3 = new Double(x_3);
+        x3 = X3.intValue();
+        Double Y3 = new Double(y_3);
+        y3 = Y3.intValue();
+        Double X4 = new Double(x_4);
+        x4 = X4.intValue();
+        Double Y4 = new Double(y_4);
+        y4 = Y4.intValue();
+        // 画线
+        g2.setColor(Color.RED);
+        g2.drawLine(sx, sy, ex, ey);
+        //
+        GeneralPath triangle = new GeneralPath();
+        triangle.moveTo(ex, ey);
+        triangle.lineTo(x3, y3);
+        triangle.lineTo(x4, y4);
+        triangle.closePath();
+        //实心箭头
+        g2.fill(triangle);
+        //非实心箭头
+        //g2.draw(triangle);
+        g2.drawString(str, (sx + ex)/2, (sy+ey)/2);
     }
 
     // 计算
