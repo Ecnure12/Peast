@@ -127,7 +127,7 @@ public class ClockConsDialog extends JDialog implements ActionListener {
 			if (constraint.getSelectedIndex() == 3) {
 				num = "=" + number.getText();
 			}
-			Main.win.instantPane.south.addConstraint(from + cons + to + num);
+			Main.win.instantPane.south.addConstraint(from, cons, to,num);
 		}
 	}
 

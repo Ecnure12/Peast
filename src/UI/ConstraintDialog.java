@@ -5,16 +5,10 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.border.TitledBorder;
 
 import Shape.Phenomenon;
@@ -22,8 +16,7 @@ import Shape.Rect;
 
 public class ConstraintDialog extends JDialog implements ActionListener {
 
-
-	String[] character = { "£¼", "¡Ü" , "£½" , "£­"};
+	String[] character = { "subClock", "alternate" , "boundedDrift_i_j"};
 	JComboBox constraint=new JComboBox(character);
 	
 	JComboBox JiaohuFrom=new JComboBox();
@@ -33,6 +26,7 @@ public class ConstraintDialog extends JDialog implements ActionListener {
 	LinkedList<InstantGraph> igs;
 	
 	JTextField number = new JTextField();
+	JTextField number2 = new JTextField();
 	
 	JButton confirm = new JButton("OK");
 	
@@ -52,11 +46,10 @@ public class ConstraintDialog extends JDialog implements ActionListener {
 	private void jbInit() {
 		// TODO Auto-generated method stub
 		setTitle("ConstraintEditor");
-		setSize(new Dimension(300, 180));
+		setSize(new Dimension(500, 240));
 		this.setResizable(false);
 		ImageIcon img = new ImageIcon(Main.class.getResource("/images/ee.jpg"));
 		background = new JLabel(img);
-
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 		double width = d.getWidth();
 		double height = d.getHeight();
@@ -70,12 +63,14 @@ public class ConstraintDialog extends JDialog implements ActionListener {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				int selectedIndex=constraint.getSelectedIndex();
-				if(selectedIndex==3){
+				if(selectedIndex == 2){
 					contentPane.add(number);
+					contentPane.add(number2);
 					repaint();
 				}
 				else if(number!=null){
 					contentPane.remove(number);
+					contentPane.remove(number2);
 					repaint();
 				}
 			}
@@ -105,12 +100,13 @@ public class ConstraintDialog extends JDialog implements ActionListener {
 			}
 		}
 
-		JiaohuFrom.setBounds(10, 20, 100, 20);
-		constraint.setBounds(120, 20, 60, 20);
-		JiaohuTo.setBounds(190, 20, 100, 20);
-		number.setBounds(300,20,60,20);
+		JiaohuFrom.setBounds(50, 60, 100, 20);
+		constraint.setBounds(160, 60, 200, 20);
+		JiaohuTo.setBounds(370, 60, 100, 20);
+		number.setBounds(210,100,30,20);
+		number2.setBounds(245,100,30,20);
 		
-		confirm.setBounds(90, 80, 80, 25);
+		confirm.setBounds(210, 140, 80, 25);
 		confirm.addActionListener(this);
 
 		contentPane.add(JiaohuFrom);
@@ -125,20 +121,88 @@ public class ConstraintDialog extends JDialog implements ActionListener {
 		this.setVisible(true);
 	}
 
+	//get the postfix number of an "int" string
+	public static int getStringNum(String str){
+		StringBuilder stringBuilder = new StringBuilder("");
+		for(int i = 0;i < str.length();i++){
+			if(str.charAt(i) <= '9' && str.charAt(i) >= '0') stringBuilder.append(str.substring(i, i+1));
+		}
+		return Integer.parseInt(stringBuilder.toString());
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		if (e.getActionCommand().equals("OK")) {
-			dispose();
 			String from=JiaohuFrom.getSelectedItem().toString();
 			String to=JiaohuTo.getSelectedItem().toString();
 			String cons=constraint.getSelectedItem().toString();
 			String num="";
-			if(constraint.getSelectedIndex()==3){
-				num="="+number.getText();
+
+			if(constraint.getSelectedIndex() == 0){
+				Main.win.instantPane.ClockRelations.add(0);
+				for(int i = 0;i < igs.size();i++){
+					for(int j = 0;j < igs.get(i).getJiaohu().size();j++){
+						if(igs.get(i).getJiaohu().get(j).getNumber() == getStringNum(from)){
+							Main.win.instantPane.froms.add(igs.get(i).getJiaohu().get(j));
+						}
+					}
+				}
+				for(int i = 0;i < igs.size();i++){
+					for(int j = 0;j < igs.get(i).getJiaohu().size();j++){
+						if(igs.get(i).getJiaohu().get(j).getNumber() == getStringNum(to)){
+							Main.win.instantPane.tos.add(igs.get(i).getJiaohu().get(j));
+						}
+					}
+				}
+				Main.win.instantPane.repaint();
+			}
+
+			else if(constraint.getSelectedIndex() == 1){
+				Main.win.instantPane.ClockRelations.add(1);
+				for(int i = 0;i < igs.size();i++){
+					for(int j = 0;j < igs.get(i).getJiaohu().size();j++){
+						if(igs.get(i).getJiaohu().get(j).getNumber() == getStringNum(from)){
+							Main.win.instantPane.froms.add(igs.get(i).getJiaohu().get(j));
+						}
+					}
+				}
+				for(int i = 0;i < igs.size();i++){
+					for(int j = 0;j < igs.get(i).getJiaohu().size();j++){
+						if(igs.get(i).getJiaohu().get(j).getNumber() == getStringNum(to)){
+							Main.win.instantPane.tos.add(igs.get(i).getJiaohu().get(j));
+						}
+					}
+				}
+				Main.win.instantPane.repaint();
+			}
+
+			else{
+				if(number.getText().trim().equals("") || number2.getText().trim().equals("")){
+					JOptionPane.showMessageDialog(null, "Please input i and j", "Error!", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				num=" "+number.getText()+" "+number2.getText();
+				Main.win.instantPane.ClockRelations.add(2);
+				for(int i = 0;i < igs.size();i++){
+					for(int j = 0;j < igs.get(i).getJiaohu().size();j++){
+						if(igs.get(i).getJiaohu().get(j).getNumber() == getStringNum(from)){
+							Main.win.instantPane.froms.add(igs.get(i).getJiaohu().get(j));
+						}
+					}
+				}
+				for(int i = 0;i < igs.size();i++){
+					for(int j = 0;j < igs.get(i).getJiaohu().size();j++){
+						if(igs.get(i).getJiaohu().get(j).getNumber() == getStringNum(to)){
+							Main.win.instantPane.tos.add(igs.get(i).getJiaohu().get(j));
+						}
+					}
+				}
+				Main.win.instantPane.repaint();
 			}
 			//Main.win.instantPane.south.addConstraint(from+cons+to+num);
 			Main.win.instantPane.addConstraint(from,cons,to,num);
+			dispose();
 		}
 	}
 	

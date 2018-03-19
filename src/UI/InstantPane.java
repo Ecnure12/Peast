@@ -26,7 +26,7 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 	// InstantGraph ig;
 	LinkedList<InstantGraph> igs = new LinkedList<InstantGraph>();
 	// LinkedList<InstantGraph> comIgs=new LinkedList<InstantGraph>();
-
+	ConstraintDialog constraintDialog;
 	static Diagram myProblemDiagram;
 	boolean dragged = false;// 拖拽必备，标识拖拽状态量
 	Jiaohu nowSelected = null;// 当前选择的交互
@@ -36,6 +36,9 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 	int relation = 0;
 	LinkedList<InstantRelation> relations = new LinkedList<InstantRelation>();
 	LinkedList<InstantRelation> cRelations = new LinkedList<InstantRelation>();
+	LinkedList<Integer> ClockRelations = new LinkedList<Integer>();
+	LinkedList<Jiaohu> froms = new LinkedList<>();
+	LinkedList<Jiaohu> tos = new LinkedList<>();
 	// 当前鼠标的位置
 	int nowx = 0;
 	int nowy = 0;
@@ -286,14 +289,46 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 		return this.igs;
 	}
 
+	private void draw(Graphics g){
+
+	}
+
 	public void paint(Graphics g) {
 		super.paint(g);
 		Arrow arrow = new Arrow();
 		if (this.igs != null) {
 			// igs.get(0).draw(g);
 			for (int i = 0; i < count; i++) {
-				// igs.get(i).setPosition(20, i * 60 + 60);
 				igs.get(i).draw(g);
+			}
+		}
+		for(int i = 0;i < ClockRelations.size();i++){
+			if(ClockRelations.get(i) == 0){
+				String str = "(s)";
+				if(froms.get(i).getMiddleX() <= tos.get(i).getMiddleX()){
+					arrow.paintComponent(froms.get(i).getMiddleX() - 5, froms.get(i).getMiddleY() - 8, tos.get(i).getMiddleX() - 35, tos.get(i).getMiddleY() - 8,str, g);
+				}
+				else{
+					arrow.paintComponent(froms.get(i).getMiddleX() - 35, froms.get(i).getMiddleY() - 8, tos.get(i).getMiddleX() - 5, tos.get(i).getMiddleY() - 8,str, g);
+				}
+			}
+			else if(ClockRelations.get(i) == 1){
+				String str = "(a)";
+				if(froms.get(i).getMiddleX() <= tos.get(i).getMiddleX()){
+					arrow.paintComponent(froms.get(i).getMiddleX() - 5, froms.get(i).getMiddleY() - 8, tos.get(i).getMiddleX() - 35, tos.get(i).getMiddleY() - 8,str, g);
+				}
+				else{
+					arrow.paintComponent(froms.get(i).getMiddleX() - 35, froms.get(i).getMiddleY() - 8, tos.get(i).getMiddleX() - 5, tos.get(i).getMiddleY() - 8,str, g);
+				}
+			}
+			else{
+				String str = "(b " + constraintDialog.number.getText() + " "+constraintDialog.number2.getText() + ")";
+				if(froms.get(i).getMiddleX() <= tos.get(i).getMiddleX()){
+					arrow.paintComponent(froms.get(i).getMiddleX() - 5, froms.get(i).getMiddleY() - 8, tos.get(i).getMiddleX() - 35, tos.get(i).getMiddleY() - 8,str, g);
+				}
+				else{
+					arrow.paintComponent(froms.get(i).getMiddleX() - 35, froms.get(i).getMiddleY() - 8, tos.get(i).getMiddleX() - 5, tos.get(i).getMiddleY() - 8,str, g);
+				}
 			}
 		}
 		if (this.relations != null) {
@@ -350,10 +385,9 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 
 	public void setDraw(boolean draw) {
 		this.isDraw = draw;
-		if (!isDraw)
-			setCursor(Cursor.getDefaultCursor());
-		else
+		if(isDraw && (this.relation == 0 || this.relation == 1 || this.relation == 2))
 			setCursor(Cursor.getPredefinedCursor(1));
+		else setCursor(Cursor.getDefaultCursor());
 	}
 
 	public static void main(String[] args) {
@@ -363,14 +397,7 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		if (e.getActionCommand().equals("Add Instant Constraint...")) {
-			/*
-			 * String s = JOptionPane.showInputDialog(this,
-			 * "Please input the description of the constraint!", "Input", 2);
-			 * 
-			 * if ((s == null) || (s.equals(""))) { return; }
-			 * south.addConstraint(s); south.repaint(); ConstraintDialog cd=
-			 */
-			new ConstraintDialog(this.igs);
+			constraintDialog = new ConstraintDialog(this.igs);
 		} else if (e.getActionCommand().equals("Coincidence")) {
 			System.out.println("Coincidence");
 			this.setDraw(true);
@@ -687,12 +714,14 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 		return m_weight;
 	}
 
+
 	public void addConstraint(String from, String cons, String to, String num) {
-		if (checkConstraint(from, cons, to))
-			this.south.addConstraint(from + cons + to + num);
-		else
-			JOptionPane.showMessageDialog(this, Main.errmes);
+		//if (checkConstraint(from, cons, to))
+			this.south.addConstraint(from, cons, to ,num);
+		//else
+		//	JOptionPane.showMessageDialog(this, Main.errmes);
 	}
+
 
 	public boolean checkConstraint(String fName, String con, String tName) {
 
