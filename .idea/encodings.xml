@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="Encoding">
+  <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
     <file url="file://$PROJECT_DIR$/src/Shape/InstantRelation.java" charset="GBK" />
     <file url="file://$PROJECT_DIR$/src/UI/ClockDialog.java" charset="GBK" />
     <file url="file://$PROJECT_DIR$/src/UI/ConstraintDialog.java" charset="GBK" />
@@ -8,5 +8,6 @@
     <file url="file://$PROJECT_DIR$/src/UI/InstantGraph.java" charset="GBK" />
     <file url="file://$PROJECT_DIR$/src/UI/InstantPane.java" charset="GBK" />
     <file url="file://$PROJECT_DIR$/src/UI/MyPane.java" charset="GBK" />
+    <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>
