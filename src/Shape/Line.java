@@ -77,6 +77,11 @@
  
      for (int i = 0; i <= this.phenomenons.size() - 1; i++) {
        Phenomenon tmp_p = (Phenomenon)this.phenomenons.get(i);
+       if(tmp_p.getRequirement() != null)
+       System.out.println(tmp_p.getName() + " , " + tmp_p.getState()+ " , " + tmp_p.getFrom().getShortName() +
+               " , " + tmp_p.getTo().getShortName() + " , " + tmp_p.getConstraining() + " , " + tmp_p.getRequirement().getText() + " , " + tmp_p.getBiaohao());
+       else System.out.println(tmp_p.getName() + " , " + tmp_p.getState()+ " , " + tmp_p.getFrom().getShortName() +
+               " , " + tmp_p.getTo().getShortName() + " , " + tmp_p.getConstraining() + " , " + tmp_p.getBiaohao());
        Rect f = tmp_p.getFrom();
        Rect t = tmp_p.getTo();
        if (f.state == 2) {

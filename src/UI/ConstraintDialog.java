@@ -6,29 +6,34 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 
 import Shape.Phenomenon;
 import Shape.Rect;
+import javafx.util.Pair;
 
 public class ConstraintDialog extends JDialog implements ActionListener {
-
-	String[] character = { "subClock", "alternate" , "boundedDrift_i_j"};
-	JComboBox constraint=new JComboBox(character);
-	
+	JComboBox constraint;
 	JComboBox JiaohuFrom=new JComboBox();
 	DefaultComboBoxModel modelFrom = new DefaultComboBoxModel();
 	JComboBox JiaohuTo=new JComboBox();
 	DefaultComboBoxModel modelTo = new DefaultComboBoxModel();
 	LinkedList<InstantGraph> igs;
-	
-	JTextField number = new JTextField();
-	JTextField number2 = new JTextField();
+	List relationList = new LinkedList();
+
+	List<JTextField> numbers = new LinkedList<>();
+	//JTextField number = new JTextField();
+	//JTextField number2 = new JTextField();
 	
 	JButton confirm = new JButton("OK");
+	JButton editRelations = new JButton("Edit");
+	JButton refresh = new JButton("Refresh");
 	
 	JLabel background = null;
 
@@ -45,6 +50,11 @@ public class ConstraintDialog extends JDialog implements ActionListener {
 	
 	private void jbInit() {
 		// TODO Auto-generated method stub
+
+		for(Map.Entry<String, Integer> entry : Main.win.instantPane.constraintRelations.entrySet()){
+            if(!relationList.contains(entry.getKey())) relationList.add(entry.getKey());
+		}
+        constraint = new JComboBox(relationList.toArray());
 		setTitle("ConstraintEditor");
 		setSize(new Dimension(500, 240));
 		this.setResizable(false);
@@ -63,16 +73,33 @@ public class ConstraintDialog extends JDialog implements ActionListener {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				int selectedIndex=constraint.getSelectedIndex();
-				if(selectedIndex == 2){
-					contentPane.add(number);
-					contentPane.add(number2);
-					repaint();
-				}
-				else if(number!=null){
-					contentPane.remove(number);
-					contentPane.remove(number2);
-					repaint();
-				}
+				String temp = (String)constraint.getItemAt(selectedIndex);
+				if(Main.win.instantPane.constraintRelations.get(temp) != 0){
+                    for(int i = 0;i < numbers.size();i++){
+                        contentPane.remove(numbers.get(i));
+                    }
+                    int size = numbers.size();
+                    while(numbers.size() != 0) numbers.remove(0);
+				    for(int i = 0;i < Main.win.instantPane.constraintRelations.get(temp);i++){
+				        JTextField number = new JTextField();
+                        numbers.add(number);
+                    }
+                    for(int i = 0;i < numbers.size();i++){
+                        numbers.get(i).setBounds(160 + 35 * i, 100, 30, 20);
+                    }
+                    for(int i = 0;i < numbers.size();i++){
+				        contentPane.add(numbers.get(i));
+                    }
+                    repaint();
+                }
+                else{
+				    for(int i = 0;i < numbers.size();i++){
+				        contentPane.remove(numbers.get(i));
+                    }
+                    int size = numbers.size();
+                    while(numbers.size() != 0) numbers.remove(0);
+                    repaint();
+                }
 			}
 		});
 		
@@ -103,16 +130,30 @@ public class ConstraintDialog extends JDialog implements ActionListener {
 		JiaohuFrom.setBounds(50, 60, 100, 20);
 		constraint.setBounds(160, 60, 200, 20);
 		JiaohuTo.setBounds(370, 60, 100, 20);
-		number.setBounds(210,100,30,20);
-		number2.setBounds(245,100,30,20);
-		
-		confirm.setBounds(210, 140, 80, 25);
+		if(Main.win.instantPane.constraintRelations.get((String)constraint.getItemAt(0)) != 0){
+		    for(int i = 0;i < Main.win.instantPane.constraintRelations.get((String)constraint.getItemAt(0));i++){
+                numbers.add(new JTextField());
+            }
+        }
+		int size = numbers.size();
+		for(int i = 0;i < size;i++){
+		    numbers.get(i).setBounds(160 + 35 * i, 100, 30, 20);
+        }
+
+		confirm.setBounds(160, 140, 80, 25);
 		confirm.addActionListener(this);
+		editRelations.setBounds(250, 140,80,25);
+		editRelations.addActionListener(this);
+        refresh.setBounds(340, 140, 80, 25);
+        refresh.addActionListener(this);
 
 		contentPane.add(JiaohuFrom);
 		contentPane.add(constraint);
 		contentPane.add(JiaohuTo);
 		contentPane.add(confirm);
+		contentPane.add(editRelations);
+		contentPane.add(refresh);
+		for(int i = 0;i < numbers.size();i++) contentPane.add(numbers.get(i));
 
 		this.setContentPane(contentPane);
 		this.getLayeredPane().add(background, new Integer(Integer.MIN_VALUE));
@@ -138,52 +179,41 @@ public class ConstraintDialog extends JDialog implements ActionListener {
 			String to=JiaohuTo.getSelectedItem().toString();
 			String cons=constraint.getSelectedItem().toString();
 			String num="";
-
-			if(constraint.getSelectedIndex() == 0){
-				Main.win.instantPane.ClockRelations.add(0);
-				for(int i = 0;i < igs.size();i++){
-					for(int j = 0;j < igs.get(i).getJiaohu().size();j++){
-						if(igs.get(i).getJiaohu().get(j).getNumber() == getStringNum(from)){
-							Main.win.instantPane.froms.add(igs.get(i).getJiaohu().get(j));
-						}
-					}
-				}
-				for(int i = 0;i < igs.size();i++){
-					for(int j = 0;j < igs.get(i).getJiaohu().size();j++){
-						if(igs.get(i).getJiaohu().get(j).getNumber() == getStringNum(to)){
-							Main.win.instantPane.tos.add(igs.get(i).getJiaohu().get(j));
-						}
-					}
-				}
-				Main.win.instantPane.repaint();
-			}
-
-			else if(constraint.getSelectedIndex() == 1){
-				Main.win.instantPane.ClockRelations.add(1);
-				for(int i = 0;i < igs.size();i++){
-					for(int j = 0;j < igs.get(i).getJiaohu().size();j++){
-						if(igs.get(i).getJiaohu().get(j).getNumber() == getStringNum(from)){
-							Main.win.instantPane.froms.add(igs.get(i).getJiaohu().get(j));
-						}
-					}
-				}
-				for(int i = 0;i < igs.size();i++){
-					for(int j = 0;j < igs.get(i).getJiaohu().size();j++){
-						if(igs.get(i).getJiaohu().get(j).getNumber() == getStringNum(to)){
-							Main.win.instantPane.tos.add(igs.get(i).getJiaohu().get(j));
-						}
-					}
-				}
-				Main.win.instantPane.repaint();
-			}
+			if(Main.win.instantPane.constraintRelations.get(cons) == 0){
+                Main.win.instantPane.ClockRelations.add(new Pair(cons, 0));
+                Main.win.instantPane.params.add(new Pair(cons, new LinkedList<>()));
+                for(int i = 0;i < igs.size();i++){
+                    for(int j = 0;j < igs.get(i).getJiaohu().size();j++){
+                        if(igs.get(i).getJiaohu().get(j).getNumber() == getStringNum(from)){
+                            Main.win.instantPane.froms.add(igs.get(i).getJiaohu().get(j));
+                        }
+                    }
+                }
+                for(int i = 0;i < igs.size();i++){
+                    for(int j = 0;j < igs.get(i).getJiaohu().size();j++){
+                        if(igs.get(i).getJiaohu().get(j).getNumber() == getStringNum(to)){
+                            Main.win.instantPane.tos.add(igs.get(i).getJiaohu().get(j));
+                        }
+                    }
+                }
+                Main.win.instantPane.repaint();
+            }
 
 			else{
-				if(number.getText().trim().equals("") || number2.getText().trim().equals("")){
-					JOptionPane.showMessageDialog(null, "Please input i and j", "Error!", JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-				num=" "+number.getText()+" "+number2.getText();
-				Main.win.instantPane.ClockRelations.add(2);
+			    for(int i = 0;i < numbers.size();i++){
+			        if(numbers.get(i).getText().trim().equals("")){
+                        JOptionPane.showMessageDialog(null, "Please input parameters", "Error!", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                }
+                num = " ";
+                List<Integer> list = new LinkedList<>();
+                for(int i = 0;i < numbers.size();i++){
+                    num  = num + numbers.get(i).getText() + " ";
+                    list.add(Integer.parseInt(numbers.get(i).getText()));
+                }
+                Main.win.instantPane.ClockRelations.add(new Pair(cons, numbers.size()));
+                Main.win.instantPane.params.add(new Pair(cons, list));
 				for(int i = 0;i < igs.size();i++){
 					for(int j = 0;j < igs.get(i).getJiaohu().size();j++){
 						if(igs.get(i).getJiaohu().get(j).getNumber() == getStringNum(from)){
@@ -200,10 +230,20 @@ public class ConstraintDialog extends JDialog implements ActionListener {
 				}
 				Main.win.instantPane.repaint();
 			}
-			//Main.win.instantPane.south.addConstraint(from+cons+to+num);
 			Main.win.instantPane.addConstraint(from,cons,to,num);
 			dispose();
 		}
+		else if(e.getActionCommand().equals("Edit")){
+            new ClockRelationDialog();
+        }
+        else{
+            for(Map.Entry<String, Integer> entry : Main.win.instantPane.constraintRelations.entrySet()){
+                if(!relationList.contains(entry.getKey())){
+                    constraint.addItem(entry.getKey());
+                    relationList.add(entry.getKey());
+                }
+            }
+        }
 	}
 	
 	public static void main(String[]arg0){

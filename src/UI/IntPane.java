@@ -5,6 +5,10 @@
  import Shape.IntDiagram;
  import Shape.Jiaohu;
  import Shape.Oval;
+ import org.dom4j.Document;
+ import org.dom4j.io.OutputFormat;
+ import util.XMLFileFilter;
+
  import java.awt.BasicStroke;
  import java.awt.Color;
  import java.awt.Cursor;
@@ -19,13 +23,13 @@
  import java.awt.event.MouseMotionListener;
 
  import java.awt.geom.*;
+ import java.io.File;
+ import java.io.FileWriter;
+ import java.io.IOException;
+ import java.io.Writer;
  import java.util.LinkedList;
- import javax.swing.JButton;
- import javax.swing.JMenuItem;
- import javax.swing.JOptionPane;
- import javax.swing.JPopupMenu;
-	import javax.swing.JToggleButton;
- 
+ import javax.swing.*;
+
  public class IntPane extends FatherPane
    implements MouseMotionListener, MouseListener, ActionListener, KeyListener
  {
@@ -49,6 +53,7 @@
    private Diagram dd_pd;
    JPopupMenu set = new JPopupMenu();
    JMenuItem check = new JMenuItem("check");
+   JMenuItem save = new JMenuItem("save");
    public boolean zhengque = false;
    public int leixing;
  
@@ -68,7 +73,9 @@
      this.jButton1.addActionListener(this);
      this.jButton2.addActionListener(this);
      this.set.add(this.check);
+     this.set.add(this.save);
      this.check.addActionListener(this);
+     this.save.addActionListener(this);
      addKeyListener(this);
      Oval req = null;
      if (this.dd.getBiaohao() != 0) {
@@ -190,6 +197,46 @@
      if (e.getActionCommand().equals("jButton2")) {
        setHua(2);
        setLeixing(1);
+     }
+     if(e.getActionCommand().equals("save")){
+       Document document = this.dd.createXML();
+       JFileChooser jFileChooser = new JFileChooser();
+       jFileChooser.setDialogTitle("Save ScenarioDiagram as XML File");
+       jFileChooser.addChoosableFileFilter(new XMLFileFilter());
+       jFileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+       jFileChooser.showDialog(null,null);
+       File file = jFileChooser.getSelectedFile();
+       String path = file.getPath();
+       if(file.exists()){
+         int i = JOptionPane.showConfirmDialog(jFileChooser, file + " has already exists,du you want to override it?");
+         if(i == JOptionPane.YES_OPTION);
+         else return;
+       }
+       Writer fileWriter = null;
+       try {
+         fileWriter = new FileWriter(path);
+       } catch (IOException e1) {
+         e1.printStackTrace();
+       }
+       OutputFormat format = OutputFormat.createPrettyPrint();
+       format.setEncoding("UTF-8");
+       org.dom4j.io.XMLWriter xmlWriter = new org.dom4j.io.XMLWriter(fileWriter,format);
+       try {
+         xmlWriter.write(document);
+       } catch (IOException e1) {
+         e1.printStackTrace();
+       }
+       try {
+         xmlWriter.flush();
+       } catch (IOException e1) {
+         e1.printStackTrace();
+       }
+       try {
+         xmlWriter.close();
+       } catch (IOException e1) {
+         e1.printStackTrace();
+       }
+       JOptionPane.showMessageDialog(null,"success!","success",JOptionPane.INFORMATION_MESSAGE);
      }
      if (e.getActionCommand().equals("check"))
        if ((this.dd.check1()) && (this.dd.check2())) {

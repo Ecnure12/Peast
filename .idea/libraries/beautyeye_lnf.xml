@@ -10,6 +10,7 @@
       <root url="jar://$PROJECT_DIR$/Lib/swt.jar!/" />
       <root url="jar://$PROJECT_DIR$/Lib/swt-debug.jar!/" />
       <root url="jar://$PROJECT_DIR$/Lib/xercesImpl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Lib/dom4j-2.1.0.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
