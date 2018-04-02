@@ -52,34 +52,32 @@ public class ConstraintPane extends JPanel {
 		String constraint = from + " " + cons + " " + to + " " + num;
 		final JLabel label = new JLabel(constraint);
 		int size = labellist.size();
-		label.setBounds(25, size * 25 + 10, 150, 20);
+		label.setBounds(25, size * 25 + 10, 300, 20);
 		final JButton button = new JButton("DEL");
 		// ImageIcon icon = new
 		// ImageIcon(Main.class.getResource("/image/delete.png"));
 		// button.setIcon(icon);
-		button.setBounds(190, size * 25 + 10, 50, 21);
+		button.setBounds(340, size * 25 + 10, 50, 21);
 		button.setContentAreaFilled(false); // …Ë÷√JButtonÕ∏√˜
 		button.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				int relationNum;
-				if(cons.equals("alternate")) relationNum = 1;
-				if(cons.equals("boundedDrift_i_j")) relationNum = 2;
-				else relationNum = 0;
+				String relationStr = cons;
 				labellist.remove(label);
 				buttonlist.remove(button);
 				int res = 0;
 				for(int i = 0;i < Main.win.instantPane.froms.size();i++){
 					if( Main.win.instantPane.froms.get(i).getNumber() == ConstraintDialog.getStringNum(from)
 							&& Main.win.instantPane.tos.get(i).getNumber() == ConstraintDialog.getStringNum(to)
-							&& Main.win.instantPane.ClockRelations.get(i) == relationNum){
+							&& Main.win.instantPane.ClockRelations.get(i).getKey() .equals(relationStr)){
 						res = i;
 						break;
 					}
 				}
 				Main.win.instantPane.ClockRelations.remove(res);
+				Main.win.instantPane.params.remove(res);
 				Main.win.instantPane.froms.remove(res);
 				Main.win.instantPane.tos.remove(res);
 				int num = labellist.size();

@@ -16,7 +16,7 @@
    implements Serializable
  {
    private int state;
-   private LinkedList dian = new LinkedList();
+   private LinkedList dian = new LinkedList<>();
    private Jiaohu from;
    private Jiaohu to;
    public int x1;

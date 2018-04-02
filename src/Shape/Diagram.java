@@ -1,10 +1,17 @@
 package Shape;
 
-import java.awt.Color;
-import java.awt.Graphics;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+
+import javax.swing.text.html.HTMLDocument;
+import java.awt.*;
 import java.io.File;
 import java.io.PrintStream;
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Diagram implements Serializable {
@@ -19,6 +26,215 @@ public class Diagram implements Serializable {
 	public Diagram(String title) {
 		this.title = title;
 		this.components = new LinkedList();
+	}
+
+	public Diagram(String title, File file){
+		this.title = title;
+		this.components = new LinkedList();
+		try {
+			SAXReader saxReader = new SAXReader();
+			Document document = saxReader.read(file);
+			Element root = document.getRootElement();
+			Element temp;
+			for(Iterator i = root.elementIterator("Machine");i.hasNext();){
+				temp = (Element)i.next();
+				String str = temp.attributeValue("machine_locality");
+				String[] locality = str.split(",");
+				int x1 = Integer.parseInt(locality[0]);
+				int y1 = Integer.parseInt(locality[1]);
+				int x2 = Integer.parseInt(locality[2]);
+				int y2 = Integer.parseInt(locality[3]);
+				Rect rect = new Rect(x1 + x2 / 2, y1 + y2 / 2);
+				rect.setText(temp.attributeValue("machine_name"));
+				rect.setShortName(temp.attributeValue("machine_shortname"));
+				rect.setState(Integer.parseInt(temp.attributeValue("machine_state")));
+				this.components.add(rect);
+			}
+			for(Iterator i = root.elementIterator("Requirement");i.hasNext();){
+				temp = (Element)i.next();
+				String str = temp.attributeValue("requirement_locality");
+				String[] locality = str.split(",");
+				int x1 = Integer.parseInt(locality[0]);
+				int y1 = Integer.parseInt(locality[1]);
+				int x2 = Integer.parseInt(locality[2]);
+				int y2 = Integer.parseInt(locality[3]);
+				Oval oval = new Oval(x1 + x2 / 2, y1 + y2 / 2);
+				oval.setText(temp.attributeValue("requirement_text"));
+				oval.des = Integer.parseInt(temp.attributeValue("requirement_des"));
+				oval.setBiaohao(Integer.parseInt(temp.attributeValue("requirement_biaohao")));
+				this.components.add(oval);
+			}
+			for(Iterator i = root.elementIterator("ProblemDomain");i.hasNext();){
+				temp = (Element)i.next();
+				String str = temp.attributeValue("problemdomain_locality");
+				String[] locality = str.split(",");
+				int x1 = Integer.parseInt(locality[0]);
+				int y1 = Integer.parseInt(locality[1]);
+				int x2 = Integer.parseInt(locality[2]);
+				int y2 = Integer.parseInt(locality[3]);
+				Rect rect = new Rect(x1 + x2 / 2, y1 + y2 / 2);
+				rect.setText(temp.attributeValue("problemdomain_name"));
+				rect.setShortName(temp.attributeValue("problemdomain_shortname"));
+				rect.setState(Integer.parseInt(temp.attributeValue("problemdomain_state")));
+				rect.setCxb(temp.attributeValue("problemdomain_cxb").charAt(0));
+				this.components.add(rect);
+			}
+			for(Iterator i = root.elementIterator("Interface");i.hasNext();){
+				temp = (Element)i.next();
+				String str = temp.attributeValue("line1_tofrom");
+				String[] locality = str.split(",");
+				String to = locality[0];
+				String from = locality[1];
+				Shape toShape = null;
+				Shape fromShape = null;
+				for(int j = 0;j < this.components.size();j++){
+					Shape tempShape = (Shape)this.components.get(j);
+					if(tempShape instanceof Rect){
+						Rect tempRect = (Rect)tempShape;
+						if(tempRect.getState() != 2 && tempRect.getShortName().equals(to)){
+							toShape = tempRect;
+						}
+						if(tempRect.getState() == 2 && tempRect.getShortName().equals(from)){
+							fromShape = tempRect;
+						}
+					}
+				}
+				Line line = new Line(fromShape, toShape, 0);
+				Element tempPhenomenon;
+				for(Iterator j = temp.elementIterator("Phenomenon");j.hasNext();){
+					tempPhenomenon = (Element)j.next();
+					String phenomenonName = tempPhenomenon.attributeValue("name");
+					String phenomenonState = tempPhenomenon.attributeValue("state");
+					String phenomenonFrom = tempPhenomenon.attributeValue("from");
+					String phenomenonTo = tempPhenomenon.attributeValue("to");
+					Rect phenomenonFromRect = null;
+					Rect phenomenonToRect = null;
+					for(int k = 0;k < this.components.size();k++){
+						Shape tempShape = (Shape)this.components.get(k);
+						if(tempShape instanceof Rect){
+							Rect tempRect = (Rect)tempShape;
+							if(tempRect.getText().equals(phenomenonFrom)) phenomenonFromRect = tempRect;
+							if(tempRect.getText().equals(phenomenonTo)) phenomenonToRect = tempRect;
+						}
+					}
+					boolean phenomenonConstraining = (tempPhenomenon.attributeValue("constraining")).equals("True") ? true : false;
+					int phenomenonBiaohao = Integer.parseInt(tempPhenomenon.attributeValue("biaohao"));
+					Phenomenon phenomenon = new Phenomenon(phenomenonName, phenomenonState, phenomenonFromRect, phenomenonToRect);
+					phenomenon.setConstraining(phenomenonConstraining);
+					phenomenon.setBiaohao(phenomenonBiaohao);
+					line.phenomenons.add(phenomenon);
+				}
+				this.components.add(line);
+			}
+			for(Iterator i = root.elementIterator("Constraint");i.hasNext();){
+				temp = (Element)i.next();
+				String str = temp.attributeValue("line2_tofrom");
+				String[] locality = str.split(",");
+				String to = locality[0];
+				String from = locality[1];
+				Shape toShape = null;
+				Shape fromShape = null;
+				for(int j = 0;j < this.components.size();j++){
+					Shape tempShape = (Shape)this.components.get(j);
+					if(tempShape instanceof Rect){
+						Rect tempRect = (Rect)tempShape;
+						if(tempRect.getState() != 2 && tempRect.getShortName().equals(to)){
+							toShape = tempRect;
+						}
+					}
+					if(tempShape instanceof Oval){
+						Oval tempOval = (Oval)tempShape;
+						if(tempOval.getText().equals(from)){
+							fromShape = tempOval;
+						}
+					}
+				}
+				Line line = new Line(fromShape, toShape, 1);
+				Element tempPhenomenon;
+				for(Iterator j = temp.elementIterator("Phenomenon");j.hasNext();){
+					tempPhenomenon = (Element)j.next();
+					String phenomenonName = tempPhenomenon.attributeValue("name");
+					String phenomenonState = tempPhenomenon.attributeValue("state");
+					String phenomenonFrom = tempPhenomenon.attributeValue("from");
+					String phenomenonTo = tempPhenomenon.attributeValue("to");
+					int pehnomenonRequirementBiaohao = Integer.parseInt(tempPhenomenon.attributeValue("requirement"));
+					boolean phenomenonConstraining = (tempPhenomenon.attributeValue("constraining")).equals("True") ? true : false;
+					int phenomenonBiaohao = Integer.parseInt(tempPhenomenon.attributeValue("biaohao"));
+					Rect phenomenonFromRect = null;
+					Rect phenomenonToRect = null;
+					for(int k = 0;k < this.components.size();k++){
+						Shape tempShape = (Shape)this.components.get(k);
+						if(tempShape instanceof Rect){
+							Rect tempRect = (Rect)tempShape;
+							if(tempRect.getText().equals(phenomenonFrom)) phenomenonFromRect = tempRect;
+							if(tempRect.getText().equals(phenomenonTo)) phenomenonToRect = tempRect;
+						}
+					}
+					Oval oval = this.getRequirement(pehnomenonRequirementBiaohao);
+					Phenomenon phenomenon = new Phenomenon(phenomenonName, phenomenonState, phenomenonFromRect, phenomenonToRect);
+					phenomenon.setConstraining(phenomenonConstraining);
+					phenomenon.setBiaohao(phenomenonBiaohao);
+					phenomenon.setRequirement(oval);
+					line.phenomenons.add(phenomenon);
+				}
+				this.components.add(line);
+			}
+			for(Iterator i = root.elementIterator("Reference");i.hasNext();){
+				temp = (Element)i.next();
+				String str = temp.attributeValue("line2_tofrom");
+				String[] locality = str.split(",");
+				String to = locality[0];
+				String from = locality[1];
+				Shape toShape = null;
+				Shape fromShape = null;
+				for(int j = 0;j < this.components.size();j++){
+					Shape tempShape = (Shape)this.components.get(j);
+					if(tempShape instanceof Rect){
+						Rect tempRect = (Rect)tempShape;
+						if(tempRect.getState() != 2 && tempRect.getShortName().equals(to)){
+							toShape = tempRect;
+						}
+					}
+					if(tempShape instanceof Oval){
+						Oval tempOval = (Oval)tempShape;
+						if(tempOval.getText().equals(from)){
+							fromShape = tempOval;
+						}
+					}
+				}
+				Line line = new Line(fromShape, toShape, 2);
+				Element tempPhenomenon;
+				for(Iterator j = temp.elementIterator("Phenomenon");j.hasNext();){
+					tempPhenomenon = (Element)j.next();
+					String phenomenonName = tempPhenomenon.attributeValue("name");
+					String phenomenonState = tempPhenomenon.attributeValue("state");
+					String phenomenonFrom = tempPhenomenon.attributeValue("from");
+					String phenomenonTo = tempPhenomenon.attributeValue("to");
+					int pehnomenonRequirementBiaohao = Integer.parseInt(tempPhenomenon.attributeValue("requirement"));
+					boolean phenomenonConstraining = (tempPhenomenon.attributeValue("constraining")).equals("True") ? true : false;
+					int phenomenonBiaohao = Integer.parseInt(tempPhenomenon.attributeValue("biaohao"));
+					Rect phenomenonFromRect = null;
+					Rect phenomenonToRect = null;
+					for(int k = 0;k < this.components.size();k++){
+						Shape tempShape = (Shape)this.components.get(k);
+						if(tempShape instanceof Rect){
+							Rect tempRect = (Rect)tempShape;
+							if(tempRect.getText().equals(phenomenonFrom)) phenomenonFromRect = tempRect;
+							if(tempRect.getText().equals(phenomenonTo)) phenomenonToRect = tempRect;
+						}
+					}
+					Oval oval = this.getRequirement(pehnomenonRequirementBiaohao);
+					Phenomenon phenomenon = new Phenomenon(phenomenonName, phenomenonState, phenomenonFromRect, phenomenonToRect);
+					phenomenon.setConstraining(phenomenonConstraining);
+					phenomenon.setBiaohao(phenomenonBiaohao);
+					phenomenon.setRequirement(oval);
+					line.phenomenons.add(phenomenon);
+				}
+				this.components.add(line);
+			}
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void add(Shape component) {
@@ -113,6 +329,7 @@ public class Diagram implements Serializable {
 		return null;
 	}
 
+
 	public int hasMachine() {
 		int count = 0;
 		for (int i = 0; i < this.components.size(); i++) {
@@ -158,6 +375,28 @@ public class Diagram implements Serializable {
 		for (int i = 0; i < this.components.size(); i++) {
 			Shape tmp = (Shape) this.components.get(i);
 			if (tmp.shape == 1) {
+				ll.add(tmp);
+			}
+		}
+		return ll;
+	}
+
+	public LinkedList getProblemDomains() {
+		LinkedList ll = new LinkedList();
+		for (int i = 0; i < this.components.size(); i++) {
+			Shape tmp = (Shape) this.components.get(i);
+			if (tmp.shape == 0) {
+				if(((Rect)tmp).getState() != 2) ll.add(tmp);
+			}
+		}
+		return ll;
+	}
+
+	public LinkedList getLines(){
+		LinkedList ll = new LinkedList();
+		for (int i = 0; i < this.components.size(); i++) {
+			Shape tmp = (Shape) this.components.get(i);
+			if (tmp.shape == 2 ) {
 				ll.add(tmp);
 			}
 		}
@@ -956,4 +1195,94 @@ public class Diagram implements Serializable {
 		}
 		return re;
 	}
+
+
+	public Document createXML(){
+		Document document = DocumentHelper.createDocument();
+		Element root = document.addElement("Diagram");
+		root.addElement("Title").addText("ProblemDiagram");
+		Rect rect = this.getMachine();
+		Element machine = root.addElement("Machine").addAttribute("machine_name",rect.getText())
+				.addAttribute("machine_shortname",rect.getShortName())
+				.addAttribute("machine_state",Integer.toString(rect.getState()))
+				.addAttribute("machine_locality",Integer.toString(rect.x1) + "," + Integer.toString(rect.y1) +
+						"," + Integer.toString(rect.x2) + "," + Integer.toString(rect.y2));
+		LinkedList<Oval> requirements = this.getRequirements();
+		for(int i = 0;i < requirements.size();i++){
+			Oval oval = requirements.get(i);
+			Element requirement = root.addElement("Requirement").addAttribute("requirement_NO",Integer.toString(i))
+					.addAttribute("requirement_text",oval.getText())
+					.addAttribute("requirement_biaohao",Integer.toString(oval.getBiaohao()))
+					.addAttribute("requirement_des",Integer.toString(oval.des))
+					.addAttribute("requirement_locality",Integer.toString(oval.x1) + "," + Integer.toString(oval.y1) +
+					"," + Integer.toString(oval.x2) + "," + Integer.toString(oval.y2));
+		}
+		LinkedList<Rect> domains = this.getProblemDomains();
+		for(int i = 0;i < domains.size();i++){
+			rect = domains.get(i);
+			Element domain = root.addElement("ProblemDomain").addAttribute("problemdomain_NO", Integer.toString(i))
+					.addAttribute("problemdomain_name",rect.getText())
+					.addAttribute("problemdomain_shortname",rect.getShortName())
+					.addAttribute("problemdomain_cxb",Character.toString(rect.getCxb()))
+					.addAttribute("problemdomain_state",Integer.toString(rect.getState()))
+					.addAttribute("problemdomain_locality",Integer.toString(rect.x1) + "," + Integer.toString(rect.y1) +
+							"," + Integer.toString(rect.x2) + "," + Integer.toString(rect.y2));
+		}
+		LinkedList<Line> lines = this.getLines();
+		for(int i = 0;i < lines.size();i++){
+			Line line = lines.get(i);
+			if(line.getState() == 0){
+				Element Interface = root.addElement("Interface").addAttribute("line1_description",line.getDescription())
+						.addAttribute("line1_locality",Integer.toString(line.x1)+ "," + Integer.toString(line.y1) +
+								"," + Integer.toString(line.x2) + "," + Integer.toString(line.y2))
+						.addAttribute("line1_tofrom",((Rect)line.to).getShortName() + "," + ((Rect)line.from).getShortName());
+				for(int j = 0;j < line.phenomenons.size();j++){
+					Phenomenon phenomenon = (Phenomenon) line.phenomenons.get(j);
+					Element phenomenonElement = Interface.addElement("Phenomenon").addAttribute("name",phenomenon.getName())
+							.addAttribute("state",phenomenon.getState())
+							.addAttribute("from",phenomenon.getFrom().getText())
+							.addAttribute("to",phenomenon.getTo().getText())
+							.addAttribute("constraining",phenomenon.getConstraining() ? "true" : "false")
+							.addAttribute("name",phenomenon.getName())
+							.addAttribute("biaohao",((Integer)phenomenon.getBiaohao()).toString());
+				}
+			}
+			else if(line.getState() == 1){
+				Element constraint = root.addElement("Constraint").addAttribute("line2_description",line.getDescription())
+						.addAttribute("line2_locality",Integer.toString(line.x1)+ "," + Integer.toString(line.y1) +
+								"," + Integer.toString(line.x2) + "," + Integer.toString(line.y2))
+						.addAttribute("line2_tofrom",((Rect)line.to).getShortName() + "," + ((Oval)line.from).getText());
+				for(int j = 0;j < line.phenomenons.size();j++){
+					Phenomenon phenomenon = (Phenomenon) line.phenomenons.get(j);
+					Element phenomenonElement = constraint.addElement("Phenomenon").addAttribute("name",phenomenon.getName())
+							.addAttribute("state",phenomenon.getState())
+							.addAttribute("from",phenomenon.getFrom().getText())
+							.addAttribute("to",phenomenon.getTo().getText())
+							.addAttribute("constraining",phenomenon.getConstraining() ? "true" : "false")
+							.addAttribute("name",phenomenon.getName())
+							.addAttribute("biaohao",((Integer)phenomenon.getBiaohao()).toString())
+							.addAttribute("requirement",((Integer)phenomenon.getRequirement().getBiaohao()).toString());
+				}
+			}
+			else{
+				Element reference = root.addElement("Reference").addAttribute("line2_description",line.getDescription())
+						.addAttribute("line2_locality",Integer.toString(line.x1)+ "," + Integer.toString(line.y1) +
+								"," + Integer.toString(line.x2) + "," + Integer.toString(line.y2))
+						.addAttribute("line2_tofrom",((Rect)line.to).getShortName() + "," + ((Oval)line.from).getText());
+				for(int j = 0;j < line.phenomenons.size();j++){
+					Phenomenon phenomenon = (Phenomenon) line.phenomenons.get(j);
+					Element phenomenonElement = reference.addElement("Phenomenon").addAttribute("name",phenomenon.getName())
+							.addAttribute("state",phenomenon.getState())
+							.addAttribute("from",phenomenon.getFrom().getText())
+							.addAttribute("to",phenomenon.getTo().getText())
+							.addAttribute("constraining",phenomenon.getConstraining() ? "true" : "false")
+							.addAttribute("name",phenomenon.getName())
+							.addAttribute("biaohao",((Integer)phenomenon.getBiaohao()).toString())
+							.addAttribute("requirement",((Integer)phenomenon.getRequirement().getBiaohao()).toString());
+				}
+			}
+		}
+		return document;
+	}
+
 }

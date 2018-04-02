@@ -73,7 +73,6 @@ public class InstantGraph implements Serializable {
 				 */
 			}
 		}
-
 		setOrder();
 		fixIteractions(this.phenomenons);
 
@@ -237,9 +236,6 @@ public class InstantGraph implements Serializable {
 
 	public void refresh() {
 		Collections.sort(this.getJiaohu());
-		for (int i = 0; i < this.getJiaohu().size(); i++) {
-			System.out.println(this.getJiaohu().get(i).getMiddleX());
-		}
 	}
 
 	public void draw(Graphics g) {
@@ -281,12 +277,10 @@ public class InstantGraph implements Serializable {
 
 		if (myIntDiagram == null)
 			return;
-
 		LinkedList m_changjing = myIntDiagram.getChangjing();
 		int m_changjing_size = m_changjing.size();
 
 		LinkedList<Changjing> new_changjing = new LinkedList<Changjing>();
-
 		for (int i = 0; i < m_changjing_size; i++) {
 
 			Changjing temp_changjing = (Changjing) m_changjing.get(i);
@@ -299,6 +293,7 @@ public class InstantGraph implements Serializable {
 		}
 
 		improve(new_changjing);
+
 	}
 
 	private void improve(LinkedList<Changjing> newChangjing) {
@@ -313,7 +308,6 @@ public class InstantGraph implements Serializable {
 
 			LinkedList<Changjing> hasWeight = new LinkedList<Changjing>();
 			int changjing_size = changjing.size();
-
 			for (int i = 0; i < changjing_size; i++) {
 
 				Changjing current = changjing.get(i);

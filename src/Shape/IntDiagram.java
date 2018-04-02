@@ -1,7 +1,15 @@
 package Shape;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+
 import java.awt.Graphics;
+import java.io.File;
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 public class IntDiagram implements Serializable {
@@ -21,6 +29,60 @@ public class IntDiagram implements Serializable {
 	public IntDiagram(String title, int biaohao) {
 		this.title = title;
 		this.biaohao = biaohao;
+	}
+
+	public IntDiagram(String title, int biaohao, File file){
+		this.title = title;
+		this.biaohao = biaohao;
+		try{
+			SAXReader saxReader = new SAXReader();
+			Document document = saxReader.read(file);
+			Element root = document.getRootElement();
+			Element temp;
+
+			for(Iterator i = root.elementIterator("ints");i.hasNext();){
+				temp = (Element)i.next();
+				String str[] = temp.attributeValue("middleXY").split(",");
+				int x = Integer.parseInt(str[0]);
+				int y = Integer.parseInt(str[1]);
+				int number = Integer.parseInt(temp.attributeValue("number"));
+				int state = Integer.parseInt(temp.attributeValue("state"));
+				String name = temp.attributeValue("name");
+				Jiaohu tempJiaohu = new Jiaohu(x,y,number,state);
+				tempJiaohu.setName(name);
+				jiaohu.add(tempJiaohu);
+			}
+
+			for(Iterator i = root.elementIterator("linkedlines");i.hasNext();){
+				temp = (Element)i.next();
+				String str[];
+				if(temp.attributeValue("turnings").contains(",")) str = temp.attributeValue("turnings").split(",");
+				else str = new String[0];
+				LinkedList list = new LinkedList();
+				for(int j = 0;j < str.length;j++) list.add(str[j]);
+				int fx = Integer.parseInt(temp.attributeValue("fromXY").split(",")[0]);
+				int fy = Integer.parseInt(temp.attributeValue("fromXY").split(",")[1]);
+				int fNumber = Integer.parseInt(temp.attributeValue("fromNum"));
+				int fState = Integer.parseInt(temp.attributeValue("fromState"));
+				String fName = temp.attributeValue("fromName");
+				Jiaohu from = new Jiaohu(fx, fy, fNumber, fState);
+				from.setName(fName);
+				int tx = Integer.parseInt(temp.attributeValue("toXY").split(",")[0]);
+				int ty = Integer.parseInt(temp.attributeValue("toXY").split(",")[1]);
+				int tNumber = Integer.parseInt(temp.attributeValue("toNum"));
+				int tState = Integer.parseInt(temp.attributeValue("toState"));
+				String tName = temp.attributeValue("toName");
+				Jiaohu to = new Jiaohu(tx, ty, tNumber, tState);
+				to.setName(tName);
+				int state = Integer.parseInt(temp.attributeValue("state"));
+				System.out.println();
+				System.out.println(list.size());
+				Changjing tempChangjing = new Changjing(list, from, to,state);
+				changjing.add(tempChangjing);
+			}
+		}catch (DocumentException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public LinkedList getJiaohu() {
@@ -241,5 +303,43 @@ public class IntDiagram implements Serializable {
 			if ((jh.equals(tmp_cj.getFrom())) || (jh.equals(tmp_cj.getTo())))
 				tmp_cj.refresh();
 		}
+	}
+
+	public Document createXML(){
+		Document document = DocumentHelper.createDocument();
+		Element root = document.addElement("Diagram");
+		root.addElement("Title").addText("ScenarioDiagram");
+
+		for(int i = 0;i < getJiaohu().size();i++){
+			Jiaohu jiaohu = (Jiaohu) getJiaohu().get(i);
+			root.addElement("ints").addAttribute("middleXY",((Integer)jiaohu.getMiddleX()).toString() + "," + ((Integer)jiaohu.getMiddleY()).toString())
+					.addAttribute("number",((Integer)jiaohu.getNumber()).toString())
+					.addAttribute("state",((Integer)jiaohu.getState()).toString())
+					.addAttribute("name",jiaohu.getName());
+		}
+
+		for(int i = 0;i < getChangjing().size();i++){
+			Changjing changjing = (Changjing) getChangjing().get(i);
+			String str = "";
+			for(int j = 0;j < changjing.getDian().size();j++){
+				if(j != changjing.getDian().size() - 1){
+					str = str + changjing.getDian().get(j).toString()+",";
+				}
+				else str = str + changjing.getDian().get(j).toString();
+			}
+			Jiaohu from = changjing.getFrom();
+			Jiaohu to = changjing.getTo();
+			root.addElement("linkedlines").addAttribute("turnings",str)
+					.addAttribute("fromXY",((Integer)from.getMiddleX()).toString() + "," + ((Integer)from.getMiddleY()).toString())
+					.addAttribute("fromNum",((Integer)from.getNumber()).toString())
+					.addAttribute("fromState",((Integer)from.getState()).toString())
+					.addAttribute("fromName",from.getName())
+					.addAttribute("toXY",((Integer)to.getMiddleX()).toString() + "," + ((Integer)to.getMiddleY()).toString())
+					.addAttribute("toNum",((Integer)to.getNumber()).toString())
+					.addAttribute("toState",((Integer)to.getState()).toString())
+					.addAttribute("toName",to.getName())
+					.addAttribute("state",((Integer)changjing.getState()).toString());
+		}
+		return document;
 	}
 }

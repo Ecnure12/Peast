@@ -65,6 +65,8 @@ public class ClockDialog extends JDialog implements ActionListener {
 				myClock.setResolution(resolutionText.getText());
 			}
 			Main.win.cd.setClock(editor, myClock);
+			System.out.println(editor.getText());
+			System.out.println(myClock.getName());
 			InstantGraph tempIg = new InstantGraph(editor, myClock);
 			if (Main.win.instantPane == null) {
 				//InstantPane ip = new InstantPane(tempIg);

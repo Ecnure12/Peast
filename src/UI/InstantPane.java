@@ -9,15 +9,16 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.LinkedList;
+import java.util.*;
+import java.util.List;
 
 import javax.swing.*;
 
+import com.hp.hpl.jena.util.tuple.TupleSet;
 import foundation.Checker;
 
 import Shape.*;
+import javafx.util.Pair;
 
 public class InstantPane extends FatherPane implements MouseMotionListener,
 		MouseListener, ActionListener {
@@ -25,6 +26,7 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 	// int state=9797;
 	// InstantGraph ig;
 	LinkedList<InstantGraph> igs = new LinkedList<InstantGraph>();
+	Map<String, Integer> constraintRelations = new HashMap<String, Integer>();
 	// LinkedList<InstantGraph> comIgs=new LinkedList<InstantGraph>();
 	ConstraintDialog constraintDialog;
 	static Diagram myProblemDiagram;
@@ -36,7 +38,10 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 	int relation = 0;
 	LinkedList<InstantRelation> relations = new LinkedList<InstantRelation>();
 	LinkedList<InstantRelation> cRelations = new LinkedList<InstantRelation>();
-	LinkedList<Integer> ClockRelations = new LinkedList<Integer>();
+	LinkedList<Pair<String, Integer>> ClockRelations = new LinkedList<>();
+	LinkedList<Pair<String, List<Integer>>> params = new LinkedList<>();
+	//Map<String, Integer> ClockRelations = new HashMap<>();
+	//Map<String, List<Integer>> params = new HashMap<>();
 	LinkedList<Jiaohu> froms = new LinkedList<>();
 	LinkedList<Jiaohu> tos = new LinkedList<>();
 	// 当前鼠标的位置
@@ -66,6 +71,9 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 	private boolean isDraw = false;
 
 	public InstantPane(InstantGraph ig) {
+		constraintRelations.put("SubClock",0);
+		constraintRelations.put("Alternate",0);
+		constraintRelations.put("BoundedDrift",2);
 		this.type = 1;
 		this.setBackground(Color.white);
 		igs.add(ig);
@@ -101,6 +109,9 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 	}
 
 	public InstantPane(Rect domain, Clock clock) {
+		constraintRelations.put("SubClock",0);
+		constraintRelations.put("Alternate",0);
+		constraintRelations.put("BoundedDrift",2);
 		this.type = 1;
 		this.setBackground(Color.white);
 		InstantGraph ig = new InstantGraph(domain, clock);
@@ -303,34 +314,21 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 			}
 		}
 		for(int i = 0;i < ClockRelations.size();i++){
-			if(ClockRelations.get(i) == 0){
-				String str = "(s)";
-				if(froms.get(i).getMiddleX() <= tos.get(i).getMiddleX()){
-					arrow.paintComponent(froms.get(i).getMiddleX() - 5, froms.get(i).getMiddleY() - 8, tos.get(i).getMiddleX() - 35, tos.get(i).getMiddleY() - 8,str, g);
-				}
-				else{
-					arrow.paintComponent(froms.get(i).getMiddleX() - 35, froms.get(i).getMiddleY() - 8, tos.get(i).getMiddleX() - 5, tos.get(i).getMiddleY() - 8,str, g);
-				}
+			String str = new String("");
+			if(ClockRelations.get(i).getKey().length() < 3) str = ClockRelations.get(i).getKey();
+			else str = "(" + ClockRelations.get(i).getKey().substring(0, 3);
+			for(int j = 0;j < ClockRelations.get(i).getValue();j++){
+				str = str + " " + params.get(i).getValue().get(j).toString();
 			}
-			else if(ClockRelations.get(i) == 1){
-				String str = "(a)";
-				if(froms.get(i).getMiddleX() <= tos.get(i).getMiddleX()){
-					arrow.paintComponent(froms.get(i).getMiddleX() - 5, froms.get(i).getMiddleY() - 8, tos.get(i).getMiddleX() - 35, tos.get(i).getMiddleY() - 8,str, g);
-				}
-				else{
-					arrow.paintComponent(froms.get(i).getMiddleX() - 35, froms.get(i).getMiddleY() - 8, tos.get(i).getMiddleX() - 5, tos.get(i).getMiddleY() - 8,str, g);
-				}
+			str = str + ")";
+			if(froms.get(i).getMiddleX() <= tos.get(i).getMiddleX()){
+				arrow.paintComponent(froms.get(i).getMiddleX() - 5, froms.get(i).getMiddleY() - 8, tos.get(i).getMiddleX() - 35, tos.get(i).getMiddleY() - 8,str, g);
 			}
 			else{
-				String str = "(b " + constraintDialog.number.getText() + " "+constraintDialog.number2.getText() + ")";
-				if(froms.get(i).getMiddleX() <= tos.get(i).getMiddleX()){
-					arrow.paintComponent(froms.get(i).getMiddleX() - 5, froms.get(i).getMiddleY() - 8, tos.get(i).getMiddleX() - 35, tos.get(i).getMiddleY() - 8,str, g);
-				}
-				else{
-					arrow.paintComponent(froms.get(i).getMiddleX() - 35, froms.get(i).getMiddleY() - 8, tos.get(i).getMiddleX() - 5, tos.get(i).getMiddleY() - 8,str, g);
-				}
+				arrow.paintComponent(froms.get(i).getMiddleX() - 35, froms.get(i).getMiddleY() - 8, tos.get(i).getMiddleX() - 5, tos.get(i).getMiddleY() - 8,str, g);
 			}
 		}
+
 		if (this.relations != null) {
 			for (int i = 0; i < relations.size(); i++) {
 				relations.get(i).draw(g);

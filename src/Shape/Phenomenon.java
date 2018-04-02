@@ -26,6 +26,9 @@
    public void setBiaohao() {
      this.biaohao = this.biaohao;
    }
+   public void setBiaohao(int biaohao) {
+     this.biaohao = biaohao;
+   }
    public void setState(String state) {
      this.state = state;
    }

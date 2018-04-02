@@ -1,33 +1,21 @@
 package UI;
 
 import Shape.*;
+import Shape.Shape;
+import jdk.internal.util.xml.XMLStreamException;
+import org.dom4j.Document;
+import org.dom4j.io.OutputFormat;
+import util.XMLFileFilter;
 
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Toolkit;
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.PrintStream;
-import java.util.Hashtable;
+import java.io.*;
 import java.util.LinkedList;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.filechooser.FileFilter;
 
 public class Main extends JFrame implements ActionListener {
 	public static String errmes = "";
@@ -36,6 +24,11 @@ public class Main extends JFrame implements ActionListener {
 	JMenu file = new JMenu("File");
 	JMenu help = new JMenu("Help");
 	JMenu ontology = new JMenu("Ontology");
+	JMenu xml = new JMenu("XML");
+	JMenuItem saveProXML = new JMenuItem("Save ProblemDiagram as XML");
+	JMenuItem loadProXML = new JMenuItem("load ProblemDiagram XML");
+	JMenuItem saveSceXML = new JMenuItem("Save ScenarioDiagram as XML");
+	JMenuItem loadSceXML = new JMenuItem("load ScenarioDiagram XML");
 	JMenuItem save = new JMenuItem("Save");
 	JMenuItem open = new JMenuItem("Open");
 	JMenuItem news = new JMenuItem("New");
@@ -435,6 +428,62 @@ public class Main extends JFrame implements ActionListener {
 		win.myInfoPane.treeAdd(0, 0, "");
 	}
 
+	private void createProblemDiagramXML() throws IOException, XMLStreamException {
+		Document document = myProblemDiagram.createXML();
+		JFileChooser jFileChooser = new JFileChooser();
+		jFileChooser.setDialogTitle("Save ProblemDiagram as XML File");
+		jFileChooser.addChoosableFileFilter(new XMLFileFilter());
+		jFileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        jFileChooser.showDialog(null,null);
+        File file = jFileChooser.getSelectedFile();
+        String path = file.getPath();
+        if(file.exists()){
+            int i = JOptionPane.showConfirmDialog(jFileChooser, file + " has already exists,du you want to override it?");
+            if(i == JOptionPane.YES_OPTION);
+            else return;
+        }
+        Writer fileWriter = new FileWriter(path);
+        OutputFormat format = OutputFormat.createPrettyPrint();
+        format.setEncoding("UTF-8");
+        org.dom4j.io.XMLWriter xmlWriter = new org.dom4j.io.XMLWriter(fileWriter,format);
+        xmlWriter.write(document);
+        xmlWriter.flush();
+        xmlWriter.close();
+        JOptionPane.showMessageDialog(null,"success!","success",JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void loadProblemDiagramXML(){
+        JFileChooser jFileChooser = new JFileChooser();
+        jFileChooser.setDialogTitle("Load ProblemDiagram from XML File");
+        jFileChooser.addChoosableFileFilter(new XMLFileFilter());
+        jFileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        jFileChooser.showDialog(null,null);
+        File file = jFileChooser.getSelectedFile();
+        if(!file.exists()) JOptionPane.showMessageDialog(null,"this file does not exist!","Error",JOptionPane.ERROR_MESSAGE);
+        this.myProblemDiagram = new Diagram("ProblemDiagram",file);
+        cd = new ClockDiagram(this.myProblemDiagram);
+        this.myDisplayPane.addPane(new MyPane(this.myProblemDiagram),this.myProblemDiagram.getTitle());
+        this.myDisplayPane.addPane(new MyPane(cd),cd.getTitle());
+    }
+
+
+    private void loadScearioDiagramXML(){
+		JFileChooser jFileChooser = new JFileChooser();
+		jFileChooser.setDialogTitle("Load ScenarioDiagram from XML File");
+		jFileChooser.addChoosableFileFilter(new XMLFileFilter());
+		jFileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		jFileChooser.showDialog(null,null);
+		File file = jFileChooser.getSelectedFile();
+		if(!file.exists()) JOptionPane.showMessageDialog(null,"this file does not exist!","Error",JOptionPane.ERROR_MESSAGE);
+		IntDiagram tempIntDiagram = new IntDiagram("ScenarioGraph" + (myIntDiagram.size() + 1),myIntDiagram.size() + 1,file);
+		this.myIntDiagram.add(tempIntDiagram);
+		IntPane tempIntPane = new IntPane(tempIntDiagram, 1,myProblemDiagram);
+		this.myDisplayPane.addPane(tempIntPane,tempIntDiagram.getTitle());
+		if(this.myIntDiagram.size() == this.myProblemDiagram.getRequirements().size()){
+
+		}
+	}
+
 	@SuppressWarnings("deprecation")
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("Exit")) {
@@ -524,6 +573,21 @@ public class Main extends JFrame implements ActionListener {
 		if (e.getActionCommand().equals("Save")) {
 			event_save();
 		}
+		if(e.getActionCommand().equals("Save ProblemDiagram as XML")){
+            try {
+                createProblemDiagramXML();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            } catch (XMLStreamException e1) {
+                e1.printStackTrace();
+            }
+        }
+        if(e.getActionCommand().equals("load ProblemDiagram XML")){
+		    loadProblemDiagramXML();
+        }
+		if(e.getActionCommand().equals("load ScenarioDiagram XML")){
+			loadScearioDiagramXML();
+		}
 		if (e.getActionCommand().equals("Load")) {
 			this.myDrawPane.event_load();
 			this.show.setEnabled(true);
@@ -547,12 +611,16 @@ public class Main extends JFrame implements ActionListener {
 		if (i == -2) {
 			buttonClear();
 			this.load.setEnabled(true);
+			this.loadProXML.setEnabled(true);
+			this.loadSceXML.setEnabled(true);
 		}
 		if (i == -1) {
 			buttonClear();
 			this.news.setEnabled(true);
 			this.open.setEnabled(true);
 			this.load.setEnabled(true);
+			this.loadProXML.setEnabled(true);
+			this.loadSceXML.setEnabled(true);
 		}
 		if (i == 0) {
 			buttonClear();
@@ -563,6 +631,9 @@ public class Main extends JFrame implements ActionListener {
 			this.check.setEnabled(true);
 			this.myDrawPane.jb1.setEnabled(true);
 			this.b_machine.setEnabled(true);
+			this.loadProXML.setEnabled(true);
+			this.loadSceXML.setEnabled(true);
+			this.saveProXML.setEnabled(true);
 		}
 		if (i == 1) {
 			buttonClear();
@@ -573,6 +644,9 @@ public class Main extends JFrame implements ActionListener {
 			this.check.setEnabled(true);
 			this.myDrawPane.jb1.setEnabled(true);
 			this.b_givendomain.setEnabled(true);
+			this.loadProXML.setEnabled(true);
+			this.loadSceXML.setEnabled(true);
+            this.saveProXML.setEnabled(true);
 		}
 		if (i == 2) {
 			buttonClear();
@@ -583,6 +657,9 @@ public class Main extends JFrame implements ActionListener {
 			this.check.setEnabled(true);
 			this.myDrawPane.jb1.setEnabled(true);
 			this.b_interface.setEnabled(true);
+			this.loadProXML.setEnabled(true);
+			this.loadSceXML.setEnabled(true);
+            this.saveProXML.setEnabled(true);
 		}
 		if (i == 3) {
 			buttonClear();
@@ -592,6 +669,8 @@ public class Main extends JFrame implements ActionListener {
 			this.save.setEnabled(true);
 			this.check.setEnabled(true);
 			this.myDrawPane.jb1.setEnabled(true);
+			this.loadProXML.setEnabled(true);
+			this.loadSceXML.setEnabled(true);
 		}
 		if ((i == 4) || (i == 5)) {
 			buttonClear();
@@ -602,6 +681,8 @@ public class Main extends JFrame implements ActionListener {
 			this.check.setEnabled(true);
 			this.myDrawPane.jb1.setEnabled(true);
 			this.b_requirement.setEnabled(true);
+			this.loadProXML.setEnabled(true);
+			this.loadSceXML.setEnabled(true);
 		}
 		if (i == 5) {
 			buttonClear();
@@ -613,6 +694,8 @@ public class Main extends JFrame implements ActionListener {
 			this.myDrawPane.jb1.setEnabled(true);
 			this.b_requirementconstraint.setEnabled(true);
 			this.b_requirementreference.setEnabled(true);
+			this.loadProXML.setEnabled(true);
+			this.loadSceXML.setEnabled(true);
 		}
 		if (i == 6) {
 			buttonClear();
@@ -622,6 +705,8 @@ public class Main extends JFrame implements ActionListener {
 			this.save.setEnabled(true);
 			this.check.setEnabled(true);
 			this.myDrawPane.jb1.setEnabled(true);
+			this.loadProXML.setEnabled(true);
+			this.loadSceXML.setEnabled(true);
 		}
 		if (i == 7) {
 			buttonClear();
@@ -637,6 +722,10 @@ public class Main extends JFrame implements ActionListener {
 			this.save.setEnabled(true);
 			this.check.setEnabled(true);
 			this.myDrawPane.jb1.setEnabled(true);
+			this.loadProXML.setEnabled(true);
+			this.loadSceXML.setEnabled(true);;
+			this.saveProXML.setEnabled(true);
+			this.saveSceXML.setEnabled(true);
 		}
 		if (i == 8) {
 			buttonClear();
@@ -646,6 +735,10 @@ public class Main extends JFrame implements ActionListener {
 			this.save.setEnabled(true);
 			this.check.setEnabled(true);
 			this.myDrawPane.jb1.setEnabled(true);
+			this.loadProXML.setEnabled(true);
+			this.loadSceXML.setEnabled(true);;
+			this.saveProXML.setEnabled(true);
+			this.saveSceXML.setEnabled(true);
 		}
 	}
 
@@ -780,6 +873,7 @@ public class Main extends JFrame implements ActionListener {
 		this.menuBar.add(this.file);
 		this.menuBar.add(this.ontology);
 		this.menuBar.add(this.help);
+		this.menuBar.add(this.xml);
 		this.ontology.add(this.load);
 		this.ontology.add(this.show);
 		this.ontology.add(this.check);
@@ -788,6 +882,10 @@ public class Main extends JFrame implements ActionListener {
 		this.file.add(this.save);
 		this.file.add(this.exit);
 		this.help.add(this.about);
+		this.xml.add(this.saveProXML);
+		this.xml.add(this.loadProXML);
+		this.xml.add(this.saveSceXML);
+		this.xml.add(this.loadSceXML);
 		this.news.addActionListener(this);
 		this.open.addActionListener(this);
 		this.save.addActionListener(this);
@@ -796,6 +894,10 @@ public class Main extends JFrame implements ActionListener {
 		this.exit.addActionListener(this);
 		this.about.addActionListener(this);
 		this.show.addActionListener(this);
+		this.saveProXML.addActionListener(this);
+		this.saveSceXML.addActionListener(this);
+		this.loadProXML.addActionListener(this);
+		this.loadSceXML.addActionListener(this);
 
 		this.show.setEnabled(false);
 		this.news.setEnabled(false);
