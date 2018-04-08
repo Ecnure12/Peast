@@ -21,6 +21,7 @@ public class ConstraintPane extends JPanel {
 	 * this.add(south,BorderLayout.SOUTH); 添加调用函数
 	 * south.addConstraint("x1>x2");参数类型String
 	 */
+	public ArrayList<String> relationString = new ArrayList<>();
 	private ArrayList<JLabel> labellist = new ArrayList<JLabel>();
 	private ArrayList<JButton> buttonlist = new ArrayList<JButton>();
 	private final int PANEWIDTH = 210;
@@ -49,7 +50,8 @@ public class ConstraintPane extends JPanel {
 		/*
 		 * 增加触发的函数，要加代码在这里加
 		 */
-		String constraint = from + " " + cons + " " + to + " " + num;
+		String constraint = from + " " + cons + " " + num + " " +  to ;
+		relationString.add(constraint);
 		final JLabel label = new JLabel(constraint);
 		int size = labellist.size();
 		label.setBounds(25, size * 25 + 10, 300, 20);
@@ -64,6 +66,7 @@ public class ConstraintPane extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
+				relationString.remove(constraint);
 				String relationStr = cons;
 				labellist.remove(label);
 				buttonlist.remove(button);

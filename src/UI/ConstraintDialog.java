@@ -206,12 +206,14 @@ public class ConstraintDialog extends JDialog implements ActionListener {
                         return;
                     }
                 }
-                num = " ";
+                num = "";
                 List<Integer> list = new LinkedList<>();
-                for(int i = 0;i < numbers.size();i++){
+                for(int i = 0;i < numbers.size() - 1;i++){
                     num  = num + numbers.get(i).getText() + " ";
                     list.add(Integer.parseInt(numbers.get(i).getText()));
                 }
+                num = num + numbers.get(numbers.size() - 1).getText();
+                list.add((Integer.parseInt(numbers.get(numbers.size() - 1).getText())));
                 Main.win.instantPane.ClockRelations.add(new Pair(cons, numbers.size()));
                 Main.win.instantPane.params.add(new Pair(cons, list));
 				for(int i = 0;i < igs.size();i++){

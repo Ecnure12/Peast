@@ -62,10 +62,10 @@ public class DrawPane extends JPanel implements ActionListener {
 	public DrawPane() {
 		setLayout(null);
 
-		int x = 10;
-		int y = 10;
-		int chang = 250;
-		int kuan = 20;
+		int x = 0;
+		int y = 0;
+		int chang = 0;
+		int kuan = 0;
 		for (int i = 0; i < this.jLabel.length; i++) {
 			this.jLabel[i] = new JLabel();
 			add(this.jLabel[i]);
@@ -74,8 +74,8 @@ public class DrawPane extends JPanel implements ActionListener {
 					.setBounds(new Rectangle(x, y + i * kuan, chang, kuan));
 			add(this.jLabel[i]);
 		}
-		this.jb1.setBounds(new Rectangle(20, y + this.jLabel.length * kuan, 81,
-				25));
+		this.jb1.setBounds(new Rectangle(0, 0, 0, 0));
+		//this.jb1.setBounds(new Rectangle(20, y + this.jLabel.length * kuan, 81, 25));
 		this.jb1.setText("Execute");
 		add(this.jb1);
 		this.jb1.setEnabled(false);
