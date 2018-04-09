@@ -841,7 +841,7 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 			StringBuffer buf = new StringBuffer();
 
 			for(int i = 0;i < south.relationString.size();i++){
-				buf = buf.append(south.relationString.get(i));
+				buf = buf.append(south.relationString.get(i) + ";");
 				buf = buf.append(System.getProperty("line.separator"));
 			}
 			for(int i = 0;i < Main.win.myIntDiagram.size();i++){
@@ -851,23 +851,28 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 					Jiaohu tempFrom = changjing.getFrom();
 					Jiaohu tempTo = changjing.getTo();
 					if(changjing.getState() == 1){
-						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " behEna " + tempTo.getName() + tempTo.getNumber());
+						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " StrictPre " + tempTo.getName() + tempTo.getNumber());
+						if(j != tempIntDiagram.getChangjing().size() - 1) buf = buf.append(";");
 						buf = buf.append(System.getProperty("line.separator"));
 					}
 					else if(changjing.getState() == 2){
-						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " behOrd " + tempTo.getName() + tempTo.getNumber());
+						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " Coincidence " + tempTo.getName() + tempTo.getNumber());
+						if(j != tempIntDiagram.getChangjing().size() - 1) buf = buf.append(";");
 						buf = buf.append(System.getProperty("line.separator"));
 					}
 					else if(changjing.getState() == 3){
-						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " syncBehReq " + tempTo.getName() + tempTo.getNumber());
+						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " StrictPre " + tempTo.getName() + tempTo.getNumber());
+						if(j != tempIntDiagram.getChangjing().size() - 1) buf = buf.append(";");
 						buf = buf.append(System.getProperty("line.separator"));
 					}
 					else if(changjing.getState() == 4){
-						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " reqOrd " + tempTo.getName() + tempTo.getNumber());
+						buf = buf.append(tempFrom.getName()+tempTo.getNumber() + " StrictPre " + tempTo.getName() + tempFrom.getNumber());
+						if(j != tempIntDiagram.getChangjing().size() - 1) buf = buf.append(";");
 						buf = buf.append(System.getProperty("line.separator"));
 					}
 					else{
-						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " reqEna " + tempTo.getName() + tempTo.getNumber());
+						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " StrictPre " + tempTo.getName() + tempTo.getNumber());
+						if(j != tempIntDiagram.getChangjing().size() - 1) buf = buf.append(";");
 						buf = buf.append(System.getProperty("line.separator"));
 					}
 				}

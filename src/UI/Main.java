@@ -403,6 +403,7 @@ public class Main extends JFrame implements ActionListener {
 		this.chooser.setFileSelectionMode(1);
 		int r = this.chooser.showSaveDialog(this);
 		if (r == 0) {
+			myIntDiagram.clear();
 			clear();
 			this.nameOfProject = s;
 			setTitle(s);

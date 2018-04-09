@@ -50,7 +50,9 @@ public class ConstraintPane extends JPanel {
 		/*
 		 * 增加触发的函数，要加代码在这里加
 		 */
-		String constraint = from + " " + cons + " " + num + " " +  to ;
+		String constraint;
+		if(num.trim() != "" && num != null) constraint = from + " " + cons + " " + num + " " +  to ;
+		else constraint = from + " " + cons + " " + to;
 		relationString.add(constraint);
 		final JLabel label = new JLabel(constraint);
 		int size = labellist.size();
