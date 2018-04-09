@@ -454,6 +454,7 @@ public class Main extends JFrame implements ActionListener {
     }
 
     private void loadProblemDiagramXML(){
+		clear();
         JFileChooser jFileChooser = new JFileChooser();
         jFileChooser.setDialogTitle("Load ProblemDiagram from XML File");
         jFileChooser.addChoosableFileFilter(new XMLFileFilter());
@@ -920,8 +921,8 @@ public class Main extends JFrame implements ActionListener {
 		double width = d.getWidth();
 		double height = d.getHeight();
 
-		this.all.setDividerLocation((int) (width / 5.0D));
-		this.rightp.setDividerLocation((int) (4.0D * width / 7.0D));
+		this.all.setDividerLocation((int) (0));
+		this.rightp.setDividerLocation((int) (5.0D * width / 7.0D));
 		this.rightp.setLeftComponent(this.myDisplayPane);
 		this.rightp.setRightComponent(this.myInfoPane);
 		getContentPane().add(this.all);

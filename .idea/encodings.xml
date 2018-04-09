@@ -5,6 +5,7 @@
     <file url="file://$PROJECT_DIR$/src/UI/ClockDialog.java" charset="GBK" />
     <file url="file://$PROJECT_DIR$/src/UI/ConstraintDialog.java" charset="GBK" />
     <file url="file://$PROJECT_DIR$/src/UI/ConstraintPane.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/UI/DisplayPane.java" charset="GBK" />
     <file url="file://$PROJECT_DIR$/src/UI/FatherPane.java" charset="GBK" />
     <file url="file://$PROJECT_DIR$/src/UI/InstantGraph.java" charset="GBK" />
     <file url="file://$PROJECT_DIR$/src/UI/InstantPane.java" charset="GBK" />

@@ -8,7 +8,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.io.File;
+import java.io.*;
 import java.util.*;
 import java.util.List;
 
@@ -19,9 +19,13 @@ import foundation.Checker;
 
 import Shape.*;
 import javafx.util.Pair;
+import util.TxtFileFilter;
 
 public class InstantPane extends FatherPane implements MouseMotionListener,
 		MouseListener, ActionListener {
+
+	private static String path = "D:/";
+	private static String filenameTemp;
 
 	// int state=9797;
 	// InstantGraph ig;
@@ -57,13 +61,14 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 
 	Font font = new Font("Arial", Font.PLAIN, 15);
 	JPanel buttonPanel = new JPanel();
-	JButton addBut = new JButton("Add Instant Constraint...");
-	JButton coiBut = new JButton("Coincidence");
-    JButton preBut = new JButton("Precedence");
-    JButton str_preBut = new JButton("Strict Precedence");
-    JButton add_clock_consBut = new JButton("Add Clock Constraint...");
-    JButton combineBut = new JButton("Clock Construction...");
-    JButton checkBut = new JButton("Check with NuSMV");
+	JButton addBut = new JButton("Add Clock Constraint");
+	//JButton coiBut = new JButton("Coincidence");
+    //JButton preBut = new JButton("Precedence");
+    //JButton str_preBut = new JButton("Strict Precedence");
+    //JButton add_clock_consBut = new JButton("Add Clock Constraint...");
+    JButton combineBut = new JButton("Clock Construction");
+    JButton createTxtBut = new JButton("Export Relations");
+    //JButton checkBut = new JButton("Check with NuSMV");
 
 
 	ConstraintPane south = new ConstraintPane();
@@ -83,27 +88,30 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 		buttonPanel.setLayout(new GridLayout(7, 1));
 		buttonPanel.setPreferredSize(new Dimension(200,30));
 		addBut.setFont(font);
-		coiBut.setFont(font);
-		preBut.setFont(font);
-		str_preBut.setFont(font);
-		add_clock_consBut.setFont(font);
+		//coiBut.setFont(font);
+		//preBut.setFont(font);
+		//str_preBut.setFont(font);
+		//add_clock_consBut.setFont(font);
 		combineBut.setFont(font);
-		checkBut.setFont(font);
+		createTxtBut.setFont(font);
+		//checkBut.setFont(font);
 		buttonPanel.add(addBut);
-		buttonPanel.add(coiBut);
-		buttonPanel.add(preBut);
-		buttonPanel.add(str_preBut);
-		buttonPanel.add(add_clock_consBut);
+		//buttonPanel.add(coiBut);
+		//buttonPanel.add(preBut);
+		//buttonPanel.add(str_preBut);
+		//buttonPanel.add(add_clock_consBut);
 		buttonPanel.add(combineBut);
-		buttonPanel.add(checkBut);
+		buttonPanel.add(createTxtBut);
+		//buttonPanel.add(checkBut);
 		this.add("East", buttonPanel);
 		addBut.addActionListener(this);
-		coiBut.addActionListener(this);
-		preBut.addActionListener(this);
-		str_preBut.addActionListener(this);
-		add_clock_consBut.addActionListener(this);
+		//coiBut.addActionListener(this);
+		//preBut.addActionListener(this);
+		//str_preBut.addActionListener(this);
+		//add_clock_consBut.addActionListener(this);
 		combineBut.addActionListener(this);
-		checkBut.addActionListener(this);
+		createTxtBut.addActionListener(this);
+		//checkBut.addActionListener(this);
 		addMouseListener(this);
 		addMouseMotionListener(this);
 	}
@@ -122,27 +130,30 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 		buttonPanel.setLayout(new GridLayout(7, 1));
 		buttonPanel.setPreferredSize(new Dimension(200,30));
 		addBut.setFont(font);
-		coiBut.setFont(font);
-		preBut.setFont(font);
-		str_preBut.setFont(font);
-		add_clock_consBut.setFont(font);
+		//coiBut.setFont(font);
+		//preBut.setFont(font);
+		//str_preBut.setFont(font);
+		//add_clock_consBut.setFont(font);
 		combineBut.setFont(font);
-		checkBut.setFont(font);
+		createTxtBut.setFont(font);
+		//checkBut.setFont(font);
 		buttonPanel.add(addBut);
-		buttonPanel.add(coiBut);
-		buttonPanel.add(preBut);
-		buttonPanel.add(str_preBut);
-		buttonPanel.add(add_clock_consBut);
+		//buttonPanel.add(coiBut);
+		//buttonPanel.add(preBut);
+		//buttonPanel.add(str_preBut);
+		//buttonPanel.add(add_clock_consBut);
 		buttonPanel.add(combineBut);
-		buttonPanel.add(checkBut);
+		buttonPanel.add(createTxtBut);
+		//buttonPanel.add(checkBut);
 		this.add("East", buttonPanel);
 		addBut.addActionListener(this);
-		coiBut.addActionListener(this);
-		preBut.addActionListener(this);
-		str_preBut.addActionListener(this);
-		add_clock_consBut.addActionListener(this);
+		//coiBut.addActionListener(this);
+		//preBut.addActionListener(this);
+		//str_preBut.addActionListener(this);
+		//add_clock_consBut.addActionListener(this);
 		combineBut.addActionListener(this);
-		checkBut.addActionListener(this);
+		createTxtBut.addActionListener(this);
+		//checkBut.addActionListener(this);
 		addMouseListener(this);
 		addMouseMotionListener(this);
 	}
@@ -394,7 +405,7 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		if (e.getActionCommand().equals("Add Instant Constraint...")) {
+		if (e.getActionCommand().equals("Add Clock Constraint")) {
 			constraintDialog = new ConstraintDialog(this.igs);
 		} else if (e.getActionCommand().equals("Coincidence")) {
 			System.out.println("Coincidence");
@@ -408,14 +419,14 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 			System.out.println("Strict Precedence");
 			this.setDraw(true);
 			relation = 2;
-		} else if (e.getActionCommand().equals("Add Clock Constraint...")) {
+		} else if (e.getActionCommand().equals("Add Clock Constraint")) {
 			System.out.println("Add Clock Constraint");
 			LinkedList<Clock> clocks = new LinkedList<Clock>();
 			for (int i = 0; i < this.igs.size(); i++) {
 				clocks.add(this.igs.get(i).getClock());
 			}
 			new ClockConsDialog(this.igs);
-		} else if (e.getActionCommand().equals("Clock Construction...")) {
+		} else if (e.getActionCommand().equals("Clock Construction")) {
 			LinkedList<String> clocks = new LinkedList<String>();
 			for (int j = 0; j < igs.size(); j++) {
 				Rect domain = igs.get(j).getDomain();
@@ -426,6 +437,13 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 		} else if (e.getActionCommand().equals("Check with NuSMV")) {
 			Checker checker = new Checker(igs, relations, cRelations);
 			checker.check();
+		}
+		else if(e.getActionCommand().equals("Export Relations")){
+			try {
+				createTxtFile();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		}
 	}
 
@@ -789,5 +807,108 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 			}
 		}
 		return result;
+	}
+
+	public void createTxtFile() throws IOException {
+		JFileChooser jFileChooser = new JFileChooser();
+		jFileChooser.setDialogTitle("Export Relations into Txt File");
+		jFileChooser.addChoosableFileFilter(new TxtFileFilter());
+		jFileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		jFileChooser.showDialog(null,null);
+		File file = jFileChooser.getSelectedFile();
+		if(!file.exists()) file.createNewFile();
+		else {
+			int i = JOptionPane.showConfirmDialog(jFileChooser, file + " has already exists,du you want to override it?");
+			if(i == JOptionPane.YES_OPTION);
+			else return;
+		}
+		String path = file.getPath();
+		boolean flag = false;
+		//String filein = "\r\n";
+		String temp = "";
+
+		FileInputStream fis = null;
+		InputStreamReader isr = null;
+		BufferedReader br = null;
+
+		FileOutputStream fos = null;
+		PrintWriter pw = null;
+		try {
+			// 将文件读入输入流
+			fis = new FileInputStream(file);
+			isr = new InputStreamReader(fis);
+			br = new BufferedReader(isr);
+			StringBuffer buf = new StringBuffer();
+
+			for(int i = 0;i < south.relationString.size();i++){
+				buf = buf.append(south.relationString.get(i));
+				buf = buf.append(System.getProperty("line.separator"));
+			}
+			for(int i = 0;i < Main.win.myIntDiagram.size();i++){
+				IntDiagram tempIntDiagram = Main.win.myIntDiagram.get(i);
+				for(int j = 0;j < tempIntDiagram.getChangjing().size();j++){
+					Changjing changjing = (Changjing) tempIntDiagram.getChangjing().get(j);
+					Jiaohu tempFrom = changjing.getFrom();
+					Jiaohu tempTo = changjing.getTo();
+					if(changjing.getState() == 1){
+						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " behEna " + tempTo.getName() + tempTo.getNumber());
+						buf = buf.append(System.getProperty("line.separator"));
+					}
+					else if(changjing.getState() == 2){
+						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " behOrd " + tempTo.getName() + tempTo.getNumber());
+						buf = buf.append(System.getProperty("line.separator"));
+					}
+					else if(changjing.getState() == 3){
+						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " syncBehReq " + tempTo.getName() + tempTo.getNumber());
+						buf = buf.append(System.getProperty("line.separator"));
+					}
+					else if(changjing.getState() == 4){
+						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " reqOrd " + tempTo.getName() + tempTo.getNumber());
+						buf = buf.append(System.getProperty("line.separator"));
+					}
+					else{
+						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " reqEna " + tempTo.getName() + tempTo.getNumber());
+						buf = buf.append(System.getProperty("line.separator"));
+					}
+				}
+			}
+			//buf.append(filein);
+
+			/*
+			// 保存该文件原有的内容
+			for (int j = 1; (temp = br.readLine()) != null; j++) {
+				buf = buf.append(temp);
+				// System.getProperty("line.separator")
+				// 行与行之间的分隔符 相当于“\n”
+				buf = buf.append(System.getProperty("line.separator"));
+			}
+			buf.append(filein);
+			*/
+
+			fos = new FileOutputStream(file);
+			pw = new PrintWriter(fos);
+			pw.write(buf.toString().toCharArray());
+			pw.flush();
+		} catch (IOException e1) {
+			// TODO 自动生成 catch 块
+			e1.printStackTrace();
+		} finally {
+			if (pw != null) {
+				pw.close();
+			}
+			if (fos != null) {
+				fos.close();
+			}
+			if (br != null) {
+				br.close();
+			}
+			if (isr != null) {
+				isr.close();
+			}
+			if (fis != null) {
+				fis.close();
+			}
+			JOptionPane.showMessageDialog(null,"success!","success",JOptionPane.INFORMATION_MESSAGE);
+		}
 	}
 }
