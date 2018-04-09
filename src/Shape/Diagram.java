@@ -1247,7 +1247,7 @@ public class Diagram implements Serializable {
 							.addAttribute("biaohao",((Integer)phenomenon.getBiaohao()).toString());
 				}
 			}
-			else if(line.getState() == 1){
+			else if(line.getState() == 2){
 				Element constraint = root.addElement("Constraint").addAttribute("line2_description",line.getDescription())
 						.addAttribute("line2_locality",Integer.toString(line.x1)+ "," + Integer.toString(line.y1) +
 								"," + Integer.toString(line.x2) + "," + Integer.toString(line.y2))
