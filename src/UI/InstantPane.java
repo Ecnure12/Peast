@@ -13,6 +13,7 @@ import java.util.*;
 import java.util.List;
 
 import javax.swing.*;
+import javax.swing.text.html.HTMLDocument;
 
 import com.hp.hpl.jena.util.tuple.TupleSet;
 import foundation.Checker;
@@ -839,6 +840,21 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 			isr = new InputStreamReader(fis);
 			br = new BufferedReader(isr);
 			StringBuffer buf = new StringBuffer();
+			Set<Integer> set = new HashSet<>();
+			int max = 0;
+			for(int i = 0;i < Main.win.myIntDiagram.size();i++){
+				IntDiagram tempIntDiagram = Main.win.myIntDiagram.get(i);
+				for(int j = 0;j < tempIntDiagram.getJiaohu().size();j++){
+					Jiaohu tempJiaoHu = (Jiaohu) tempIntDiagram.getJiaohu().get(j);
+					max = Math.max(max, tempJiaoHu.getNumber());
+				}
+			}
+
+			for(int i = 1;i <= max ;i++){
+				buf = buf.append("int" + i);
+				if(i == max) buf = buf.append(";");
+				buf = buf.append(System.getProperty("line.separator"));
+			}
 
 			for(int i = 0;i < south.relationString.size();i++){
 				buf = buf.append(south.relationString.get(i) + ";");
@@ -851,28 +867,23 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 					Jiaohu tempFrom = changjing.getFrom();
 					Jiaohu tempTo = changjing.getTo();
 					if(changjing.getState() == 1){
-						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " StrictPre " + tempTo.getName() + tempTo.getNumber());
-						if(j != tempIntDiagram.getChangjing().size() - 1) buf = buf.append(";");
+						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " StrictPre " + tempTo.getName() + tempTo.getNumber() + ";");
 						buf = buf.append(System.getProperty("line.separator"));
 					}
 					else if(changjing.getState() == 2){
-						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " Coincidence " + tempTo.getName() + tempTo.getNumber());
-						if(j != tempIntDiagram.getChangjing().size() - 1) buf = buf.append(";");
+						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " Coincidence " + tempTo.getName() + tempTo.getNumber() + ";");
 						buf = buf.append(System.getProperty("line.separator"));
 					}
 					else if(changjing.getState() == 3){
-						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " StrictPre " + tempTo.getName() + tempTo.getNumber());
-						if(j != tempIntDiagram.getChangjing().size() - 1) buf = buf.append(";");
+						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " StrictPre " + tempTo.getName() + tempTo.getNumber() + ";");
 						buf = buf.append(System.getProperty("line.separator"));
 					}
 					else if(changjing.getState() == 4){
-						buf = buf.append(tempFrom.getName()+tempTo.getNumber() + " StrictPre " + tempTo.getName() + tempFrom.getNumber());
-						if(j != tempIntDiagram.getChangjing().size() - 1) buf = buf.append(";");
+						buf = buf.append(tempFrom.getName()+tempTo.getNumber() + " StrictPre " + tempTo.getName() + tempFrom.getNumber() + ";");
 						buf = buf.append(System.getProperty("line.separator"));
 					}
 					else{
-						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " StrictPre " + tempTo.getName() + tempTo.getNumber());
-						if(j != tempIntDiagram.getChangjing().size() - 1) buf = buf.append(";");
+						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " StrictPre " + tempTo.getName() + tempTo.getNumber() + ";");
 						buf = buf.append(System.getProperty("line.separator"));
 					}
 				}
