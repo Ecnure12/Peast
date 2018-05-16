@@ -6,6 +6,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
@@ -44,6 +45,7 @@ public class CConstructionDialog extends JDialog implements ActionListener {
 	JComboBox jComboBox1;
 	DefaultListModel listModel1 = new DefaultListModel();
 	JList combineList = new JList(this.listModel1);
+	List<String> tempList = new LinkedList();
 
 	int selectedIndex = -1;
 
@@ -163,13 +165,26 @@ public class CConstructionDialog extends JDialog implements ActionListener {
 			case 0:
 				all.add(this.jComboBox1.getSelectedItem().toString());
 				all.add(this.editFilter.getText());
+				Main.win.instantPane.constructedClocks.add(this.listModel1.getElementAt(0).toString() + " " + "filteredBy" + " " + this.editFilter.getText() + "(" + this.jEditName.getText() + ")");
 				break;
 			case 1:
-			case 2:
-			case 3:
 				for (int i = 0; i < this.listModel1.size(); i++) {
 					all.add(listModel1.getElementAt(i).toString());
 				}
+				Main.win.instantPane.constructedClocks.add(this.listModel1.getElementAt(0) + " " + "Union" + " " + this.listModel1.getElementAt(1) + "(" + this.jEditName.getText() + ")");
+				break;
+			case 2:
+				for (int i = 0; i < this.listModel1.size(); i++) {
+					all.add(listModel1.getElementAt(i).toString());
+					Main.win.instantPane.constructedClocks.add(this.listModel1.getElementAt(0) + " " + "Sup" + " " + this.listModel1.getElementAt(1) + "(" + this.jEditName.getText() + ")");
+				}
+				break;
+			case 3:
+				for (int i = 0; i < this.listModel1.size(); i++) {
+					all.add(listModel1.getElementAt(i).toString());
+					Main.win.instantPane.constructedClocks.add(this.listModel1.getElementAt(0) + " " + "Inf" + " " + this.listModel1.getElementAt(1) + "(" + this.jEditName.getText() + ")");
+				}
+				break;
 			}
 			/*
 			 * InstantGraph tempIg = new InstantGraph(selectedIndex, all, new

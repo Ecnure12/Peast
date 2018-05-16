@@ -51,9 +51,23 @@ public class ConstraintPane extends JPanel {
 		 * 增加触发的函数，要加代码在这里加
 		 */
 		String constraint;
-		if(num.trim() != "" && num != null) constraint = from + " " + cons + " " + num + " " +  to ;
-		else constraint = from + " " + cons + " " + to;
-		relationString.add(constraint);
+        if(Main.win.instantPane.constraintRelations.get(cons) == 0){
+            if(num.trim() != "" && num != null) constraint = from + " " + cons + " " + num + " " +  to ;
+            else constraint = from + " " + cons + " " + to;
+            relationString.add(constraint);
+        }
+        else{
+            String[] temps = num.split(" ");
+            StringBuilder s = new StringBuilder(from + " " + cons + " " + "[");
+            for(int i = 0;i < temps.length;i++){
+                if(i != temps.length - 1) s.append(temps[i] + ",");
+                else s.append(temps[i]);
+            }
+            s.append("]" + " " + to);
+            constraint = s.toString();
+            relationString.add(constraint);
+        }
+
 		final JLabel label = new JLabel(constraint);
 		int size = labellist.size();
 		label.setBounds(25, size * 25 + 10, 300, 20);
@@ -63,12 +77,13 @@ public class ConstraintPane extends JPanel {
 		// button.setIcon(icon);
 		button.setBounds(340, size * 25 + 10, 50, 21);
 		button.setContentAreaFilled(false); // 设置JButton透明
-		button.addActionListener(new ActionListener() {
+        String finalConstraint = constraint;
+        button.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				relationString.remove(constraint);
+				relationString.remove(finalConstraint);
 				String relationStr = cons;
 				labellist.remove(label);
 				buttonlist.remove(button);
