@@ -64,7 +64,7 @@ public class Diagram implements Serializable {
 				oval.setBiaohao(Integer.parseInt(temp.attributeValue("requirement_biaohao")));
 				this.components.add(oval);
 			}
-			for(Iterator i = root.elementIterator("ProblemDomain");i.hasNext();){
+			for(Iterator i = root.elementIterator("Problemdomain");i.hasNext();){
 				temp = (Element)i.next();
 				String str = temp.attributeValue("problemdomain_locality");
 				String[] locality = str.split(",");
@@ -81,6 +81,7 @@ public class Diagram implements Serializable {
 			}
 			for(Iterator i = root.elementIterator("Interface");i.hasNext();){
 				temp = (Element)i.next();
+				String name = temp.attributeValue("line1_name");
 				String str = temp.attributeValue("line1_tofrom");
 				String[] locality = str.split(",");
 				String to = locality[0];
@@ -100,6 +101,7 @@ public class Diagram implements Serializable {
 					}
 				}
 				Line line = new Line(fromShape, toShape, 0);
+				line.name = name;
 				Element tempPhenomenon;
 				for(Iterator j = temp.elementIterator("Phenomenon");j.hasNext();){
 					tempPhenomenon = (Element)j.next();
@@ -126,8 +128,9 @@ public class Diagram implements Serializable {
 				}
 				this.components.add(line);
 			}
-			for(Iterator i = root.elementIterator("Constraint");i.hasNext();){
+			for(Iterator i = root.elementIterator("Reference");i.hasNext();){
 				temp = (Element)i.next();
+				String name = temp.attributeValue("line2_name");
 				String str = temp.attributeValue("line2_tofrom");
 				String[] locality = str.split(",");
 				String to = locality[0];
@@ -150,6 +153,7 @@ public class Diagram implements Serializable {
 					}
 				}
 				Line line = new Line(fromShape, toShape, 1);
+				line.name = name;
 				Element tempPhenomenon;
 				for(Iterator j = temp.elementIterator("Phenomenon");j.hasNext();){
 					tempPhenomenon = (Element)j.next();
@@ -179,8 +183,9 @@ public class Diagram implements Serializable {
 				}
 				this.components.add(line);
 			}
-			for(Iterator i = root.elementIterator("Reference");i.hasNext();){
+			for(Iterator i = root.elementIterator("Constraint");i.hasNext();){
 				temp = (Element)i.next();
+				String name = temp.attributeValue("line2_name");
 				String str = temp.attributeValue("line2_tofrom");
 				String[] locality = str.split(",");
 				String to = locality[0];
@@ -203,6 +208,7 @@ public class Diagram implements Serializable {
 					}
 				}
 				Line line = new Line(fromShape, toShape, 2);
+				line.name = name;
 				Element tempPhenomenon;
 				for(Iterator j = temp.elementIterator("Phenomenon");j.hasNext();){
 					tempPhenomenon = (Element)j.next();
@@ -498,6 +504,7 @@ public class Diagram implements Serializable {
 				}
 
 				String biao = tmpLine.name;
+				System.out.println(biao);
 				g.drawString(biao, (tmpLine.x1 + tmpLine.x2) / 2,
 						(tmpLine.y1 + tmpLine.y2) / 2);
 
@@ -1233,6 +1240,7 @@ public class Diagram implements Serializable {
 			Line line = lines.get(i);
 			if(line.getState() == 0){
 				Element Interface = root.addElement("Interface").addAttribute("line1_description",line.getDescription())
+						.addAttribute("line1_name",line.name)
 						.addAttribute("line1_locality",Integer.toString(line.x1)+ "," + Integer.toString(line.y1) +
 								"," + Integer.toString(line.x2) + "," + Integer.toString(line.y2))
 						.addAttribute("line1_tofrom",((Rect)line.to).getShortName() + "," + ((Rect)line.from).getShortName());
@@ -1249,6 +1257,7 @@ public class Diagram implements Serializable {
 			}
 			else if(line.getState() == 2){
 				Element constraint = root.addElement("Constraint").addAttribute("line2_description",line.getDescription())
+						.addAttribute("line2_name",line.name)
 						.addAttribute("line2_locality",Integer.toString(line.x1)+ "," + Integer.toString(line.y1) +
 								"," + Integer.toString(line.x2) + "," + Integer.toString(line.y2))
 						.addAttribute("line2_tofrom",((Rect)line.to).getShortName() + "," + ((Oval)line.from).getText());
@@ -1266,6 +1275,7 @@ public class Diagram implements Serializable {
 			}
 			else{
 				Element reference = root.addElement("Reference").addAttribute("line2_description",line.getDescription())
+						.addAttribute("line2_name",line.name)
 						.addAttribute("line2_locality",Integer.toString(line.x1)+ "," + Integer.toString(line.y1) +
 								"," + Integer.toString(line.x2) + "," + Integer.toString(line.y2))
 						.addAttribute("line2_tofrom",((Rect)line.to).getShortName() + "," + ((Oval)line.from).getText());

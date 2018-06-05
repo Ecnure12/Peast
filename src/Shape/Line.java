@@ -131,6 +131,7 @@
  
    public void refresh()
    {
+     System.out.println(this.name);
      if ((this.from.shape == 0) && (this.to.shape == 0)) {
        Rect tmp2 = (Rect)this.to;
        Rect tmp1 = (Rect)this.from;
