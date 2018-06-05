@@ -13,6 +13,7 @@ import java.util.*;
 import java.util.List;
 
 import javax.swing.*;
+import javax.swing.text.html.HTMLDocument;
 
 import com.hp.hpl.jena.util.tuple.TupleSet;
 import foundation.Checker;
@@ -40,6 +41,7 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 	Jiaohu from = null;
 	Jiaohu to = null;
 	int relation = 0;
+	LinkedList<String> constructedClocks = new LinkedList<>();
 	LinkedList<InstantRelation> relations = new LinkedList<InstantRelation>();
 	LinkedList<InstantRelation> cRelations = new LinkedList<InstantRelation>();
 	LinkedList<Pair<String, Integer>> ClockRelations = new LinkedList<>();
@@ -78,7 +80,9 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 	public InstantPane(InstantGraph ig) {
 		constraintRelations.put("SubClock",0);
 		constraintRelations.put("Alternate",0);
-		constraintRelations.put("BoundedDrift",2);
+		constraintRelations.put("StrictPre",0);
+		constraintRelations.put("nStrictPre",0);
+		constraintRelations.put("BoundedDiff",2);
 		this.type = 1;
 		this.setBackground(Color.white);
 		igs.add(ig);
@@ -119,7 +123,9 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 	public InstantPane(Rect domain, Clock clock) {
 		constraintRelations.put("SubClock",0);
 		constraintRelations.put("Alternate",0);
-		constraintRelations.put("BoundedDrift",2);
+		constraintRelations.put("StrictPre",0);
+		constraintRelations.put("nStrictPre",0);
+		constraintRelations.put("BoundedDiff",2);
 		this.type = 1;
 		this.setBackground(Color.white);
 		InstantGraph ig = new InstantGraph(domain, clock);
@@ -818,7 +824,7 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 		File file = jFileChooser.getSelectedFile();
 		if(!file.exists()) file.createNewFile();
 		else {
-			int i = JOptionPane.showConfirmDialog(jFileChooser, file + " has already exists,du you want to override it?");
+			int i = JOptionPane.showConfirmDialog(jFileChooser, file + " has already existed,du you want to override it?");
 			if(i == JOptionPane.YES_OPTION);
 			else return;
 		}
@@ -839,6 +845,24 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 			isr = new InputStreamReader(fis);
 			br = new BufferedReader(isr);
 			StringBuffer buf = new StringBuffer();
+			Set<Integer> set = new HashSet<>();
+			int max = 0;
+			for(int i = 0;i < Main.win.myIntDiagram.size();i++){
+				IntDiagram tempIntDiagram = Main.win.myIntDiagram.get(i);
+				for(int j = 0;j < tempIntDiagram.getJiaohu().size();j++){
+					Jiaohu tempJiaoHu = (Jiaohu) tempIntDiagram.getJiaohu().get(j);
+					System.out.println(tempJiaoHu.getName());
+					max = Math.max(max, tempJiaoHu.getNumber());
+				}
+			}
+
+			for(int i = 1;i <= max ;i++){
+				buf = buf.append("int" + i);
+				if(i == max) buf = buf.append(";");
+				buf = buf.append(System.getProperty("line.separator"));
+			}
+
+			buf = buf.append(System.getProperty("line.separator"));
 
 			for(int i = 0;i < south.relationString.size();i++){
 				buf = buf.append(south.relationString.get(i) + ";");
@@ -851,31 +875,31 @@ public class InstantPane extends FatherPane implements MouseMotionListener,
 					Jiaohu tempFrom = changjing.getFrom();
 					Jiaohu tempTo = changjing.getTo();
 					if(changjing.getState() == 1){
-						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " StrictPre " + tempTo.getName() + tempTo.getNumber());
-						if(j != tempIntDiagram.getChangjing().size() - 1) buf = buf.append(";");
+						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " StrictPre " + tempTo.getName() + tempTo.getNumber() + ";");
 						buf = buf.append(System.getProperty("line.separator"));
 					}
 					else if(changjing.getState() == 2){
-						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " Coincidence " + tempTo.getName() + tempTo.getNumber());
-						if(j != tempIntDiagram.getChangjing().size() - 1) buf = buf.append(";");
+						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " Coincidence " + tempTo.getName() + tempTo.getNumber() + ";");
 						buf = buf.append(System.getProperty("line.separator"));
 					}
 					else if(changjing.getState() == 3){
-						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " StrictPre " + tempTo.getName() + tempTo.getNumber());
-						if(j != tempIntDiagram.getChangjing().size() - 1) buf = buf.append(";");
+						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " StrictPre " + tempTo.getName() + tempTo.getNumber() + ";");
 						buf = buf.append(System.getProperty("line.separator"));
 					}
 					else if(changjing.getState() == 4){
-						buf = buf.append(tempFrom.getName()+tempTo.getNumber() + " StrictPre " + tempTo.getName() + tempFrom.getNumber());
-						if(j != tempIntDiagram.getChangjing().size() - 1) buf = buf.append(";");
+						buf = buf.append(tempFrom.getName()+tempTo.getNumber() + " StrictPre " + tempTo.getName() + tempFrom.getNumber() + ";");
 						buf = buf.append(System.getProperty("line.separator"));
 					}
 					else{
-						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " StrictPre " + tempTo.getName() + tempTo.getNumber());
-						if(j != tempIntDiagram.getChangjing().size() - 1) buf = buf.append(";");
+						buf = buf.append(tempFrom.getName()+tempFrom.getNumber() + " StrictPre " + tempTo.getName() + tempTo.getNumber() + ";");
 						buf = buf.append(System.getProperty("line.separator"));
 					}
 				}
+			}
+
+			for(int i = 0;i < this.constructedClocks.size();i++){
+				buf = buf .append(constructedClocks.get(i)+";");
+				buf = buf.append(System.getProperty("line.separator"));
 			}
 			//buf.append(filein);
 
